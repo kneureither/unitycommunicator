@@ -1,0 +1,44 @@
+2019-08-16 00:10:15,298 - unity-com - INFO : executing unity response server...
+2019-08-16 00:10:15,299 - unity-com - INFO : CONFIG : 50073 at localhost
+2019-08-16 00:10:25,291 - unity-com - DEBUG : entered renderParameters()
+2019-08-16 00:10:25,291 - unity-com - INFO : start sending data...
+2019-08-16 00:10:25,291 - unity-com - DEBUG : _sendData(): entered
+2019-08-16 00:10:25,291 - unity-com - DEBUG : _sendData(): sendall succeeded
+2019-08-16 00:10:25,291 - unity-com - INFO : success: data sent.
+2019-08-16 00:10:25,291 - unity-com - DEBUG : _receiveDataAsBytes(): entered
+2019-08-16 00:10:25,392 - unity-com - ERROR : _receiveDataAsBytes(): timeout -> exit _receiveData()
+2019-08-16 00:10:25,392 - unity-com - DEBUG : run again _receiveData(): data so far bytearray(b'\x00')
+2019-08-16 00:10:25,392 - unity-com - DEBUG : _receiveDataAsBytes(): entered
+2019-08-16 00:10:25,496 - unity-com - ERROR : _receiveDataAsBytes(): timeout -> exit _receiveData()
+2019-08-16 00:10:25,496 - unity-com - DEBUG : run again _receiveData(): data so far bytearray(b'\x00')
+2019-08-16 00:10:25,496 - unity-com - DEBUG : _receiveDataAsBytes(): entered
+2019-08-16 00:10:25,658 - unity-com - ERROR : _receiveDataAsBytes(): timeout -> exit _receiveData()
+2019-08-16 00:10:25,659 - unity-com - DEBUG : _renderParameters(): end tag from Unity detected, end receive
+2019-08-16 00:10:25,659 - unity-com - DEBUG : received scene of 159969 bytes
+2019-08-16 00:10:25,660 - unity-com - INFO : unpacked scene with ID 3
+2019-08-16 00:10:25,752 - unity-com - DEBUG : wrote response data to file
+2019-08-16 00:10:25,755 - unity-com - DEBUG : _sendData(): entered
+2019-08-16 00:10:25,755 - unity-com - DEBUG : _sendData(): sendall succeeded
+2019-08-16 00:10:25,755 - unity-com - DEBUG : end command sent
+2019-08-16 00:17:19,062 - unity-com - INFO : executing unity response server...
+2019-08-16 00:17:19,063 - unity-com - INFO : CONFIG : 50073 at localhost
+2019-08-16 00:17:27,721 - unity-com - DEBUG : entered renderParameters()
+2019-08-16 00:17:27,721 - unity-com - INFO : start sending data...
+2019-08-16 00:17:27,721 - unity-com - DEBUG : _sendData(): entered
+2019-08-16 00:17:27,721 - unity-com - DEBUG : _sendData(): sendall succeeded
+2019-08-16 00:17:27,721 - unity-com - INFO : success: data sent.
+2019-08-16 00:17:27,721 - unity-com - DEBUG : _receiveDataAsBytes(): entered
+2019-08-16 00:17:27,826 - unity-com - ERROR : _receiveDataAsBytes(): timeout -> exit _receiveData()
+2019-08-16 00:17:27,827 - unity-com - DEBUG : run again _receiveData(): data so far bytearray(b'\x00')
+2019-08-16 00:17:27,827 - unity-com - DEBUG : _receiveDataAsBytes(): entered
+2019-08-16 00:17:27,931 - unity-com - ERROR : _receiveDataAsBytes(): timeout -> exit _receiveData()
+2019-08-16 00:17:27,932 - unity-com - DEBUG : run again _receiveData(): data so far bytearray(b'\x00')
+2019-08-16 00:17:27,932 - unity-com - DEBUG : _receiveDataAsBytes(): entered
+2019-08-16 00:17:28,042 - unity-com - ERROR : _receiveDataAsBytes(): timeout -> exit _receiveData()
+2019-08-16 00:17:28,042 - unity-com - DEBUG : _renderParameters(): end tag from Unity detected, end receive
+2019-08-16 00:17:28,042 - unity-com - DEBUG : received scene of 159969 bytes
+2019-08-16 00:17:28,042 - unity-com - INFO : unpacked scene with ID 3
+2019-08-16 00:17:28,128 - unity-com - DEBUG : wrote response data to file
+2019-08-16 00:17:28,131 - unity-com - DEBUG : _sendData(): entered
+2019-08-16 00:17:28,131 - unity-com - DEBUG : _sendData(): sendall succeeded
+2019-08-16 00:17:28,131 - unity-com - DEBUG : end command sent

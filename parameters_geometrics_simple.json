@@ -1,0 +1,47 @@
+{
+  "message": "Paramter JSON File Nummer drei",
+  "sceneID": 3,
+  "Object0": {
+    "position": [-8.3,9.45,-10],
+    "scale": [1.0,1.0,1.0],
+    "rotation": [45,45,0],
+    "orthographic": 1,
+    "fieldOfView": 5
+  },
+  "Object1": {
+    "position": [1,2,1],
+    "scale": [1.0,1.0,1.0],
+    "rotation": [70,0,0],
+    "color":[1.0,1.0,1.0],
+    "intensity":18.12,
+    "active": 1,
+    "range": 8,
+    "spotAngle": 64
+  },
+  "Object2":  {
+    "position": [2,0,0],
+    "scale": [1.0,1.0,1.0],
+    "rotation": [5,4,3],
+    "color":[1.0,1.0,1.0],
+    "intensity":9.9,
+    "active": 1,
+    "range": 10
+  },
+  "Object3":{
+    "position": [2,0,0],
+    "scale": [1.0,1.0,1.0],
+    "rotation": [5,4,3],
+    "color":[1.0,1.0,1.0],
+    "intensity":9.9,
+    "active": 1
+  },
+  "Object4": {
+    "position": [2,0,0],
+    "scale": [1.0,1.0,1.0],
+    "rotation": [5,4,3],
+    "color":[1,1,1],
+    "transparency": 1,
+    "metallic": 0,
+    "glossiness": 0
+  }
+}
