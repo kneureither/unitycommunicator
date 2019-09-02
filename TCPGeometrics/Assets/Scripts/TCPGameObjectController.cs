@@ -29,6 +29,14 @@ public class TCPGameObjectController : MonoBehaviour
         }
     }
 
+    void SetTransform(JSONCaptureObject Trafoparameters)
+    {
+        transform.position = new Vector3(Trafoparameters.position[0], Trafoparameters.position[1], Trafoparameters.position[2]);
+        transform.eulerAngles = new Vector3(Trafoparameters.rotation[0], Trafoparameters.rotation[1], Trafoparameters.rotation[2]);
+        transform.localScale = new Vector3(Trafoparameters.scale[0], Trafoparameters.scale[1], Trafoparameters.scale[2]);
+    }
+
+
 
     // Implementation of all parameter changes of objects
     void SetJSONparamters()
@@ -41,22 +49,16 @@ public class TCPGameObjectController : MonoBehaviour
             case 0:
                 Debug.Log("SetJSONparamters of Object 0");
                 JSONCaptureCamObject Object0 = manager.CaptureParameters.Object0;
-                transform.position = new Vector3(Object0.position[0], Object0.position[1], Object0.position[2]);
-                transform.eulerAngles = new Vector3(Object0.rotation[0], Object0.rotation[1], Object0.rotation[2]);
-                transform.localScale = new Vector3(Object0.scale[0], Object0.scale[1], Object0.scale[2]);
+                SetTransform((JSONCaptureObject) Object0);
 
                 //Todo Implement all parameters of JSON
-
-                Debug.Log(Object0.position[0].ToString());
 
                 manager.objectParametersSet[0] = true;
                 break;
             case 1:
                 Debug.Log("SetJSONparamters of Object 1");
                 JSONCaptureLightObject Object1 = manager.CaptureParameters.Object1;
-                transform.position = new Vector3(Object1.position[0], Object1.position[1], Object1.position[2]);
-                transform.eulerAngles = new Vector3(Object1.rotation[0], Object1.rotation[1], Object1.rotation[2]);
-                transform.localScale = new Vector3(Object1.scale[0], Object1.scale[1], Object1.scale[2]);
+                SetTransform((JSONCaptureObject) Object1);
 
                 //Todo Implement all parameters of JSON
 
@@ -92,8 +94,5 @@ public class TCPGameObjectController : MonoBehaviour
                 break;
         }
     }
+
 }
-
-
-
-

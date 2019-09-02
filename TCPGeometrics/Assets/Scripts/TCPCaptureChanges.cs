@@ -13,9 +13,11 @@ public class TCPCaptureChanges : MonoBehaviour
     #region members
     //Todo clean up variables
     public int numberOfObjects;
-    [HideInInspector] public bool[] objectParametersSet; //tells, wheter all objects are set
-    [HideInInspector] public bool captureChangeRequest; //tells, wheter there are new paramteres to render
-    [HideInInspector] public bool sceneShotProcessed; //tells, whether next parameters can be received
+
+    [HideInInspector] public bool[] objectParametersSet; //tells, if every object is set to new json parameters
+    [HideInInspector] public bool captureChangeRequest; //tells, if there are new paramteres to render
+    [HideInInspector] public bool sceneShotProcessed; //tells, if next parameters can be received
+    [HideInInspector] public JSONCaptureParameters CaptureParameters;
 
     private string jsontcpconfig;
     private string jsonparameters;
@@ -23,13 +25,9 @@ public class TCPCaptureChanges : MonoBehaviour
     private bool endSession;
     private int count_update; //temp, delete after debug
     private int count_captsend;
-    TcpClient client;
-    NetworkStream stream;
-    JSONSceneShot JsonScene;
-
-    [HideInInspector] public JSONCaptureParameters CaptureParameters;
-    TcpConfigParameters Tcpconfig;
-    //public JSONCaptureParameters CaptureParameters;
+    private TcpClient client;
+    private NetworkStream stream;
+    private TcpConfigParameters Tcpconfig;
     #endregion
 
 
@@ -44,6 +42,7 @@ public class TCPCaptureChanges : MonoBehaviour
         //establish TCP Socket Connection
         InitTCPsocket();
 
+        //Set global values
         readyToCapture = false;
         count_update = 0;
         count_captsend = 0;
@@ -104,7 +103,6 @@ public class TCPCaptureChanges : MonoBehaviour
 
         //Start TCP Connection
         client = new TcpClient(Tcpconfig.host, Tcpconfig.ports[1]);
-        //client = new TcpClient(Tcpconfig.host, 49995);
         Debug.Log("Connecting...");
         Debug.Log("Port: " + Tcpconfig.ports[1].ToString());
 
@@ -115,6 +113,8 @@ public class TCPCaptureChanges : MonoBehaviour
 
     void ListenFromServer()
     {
+        string serverMessage = "";
+
         //Read data from server
         while (true)
         {
@@ -124,35 +124,44 @@ public class TCPCaptureChanges : MonoBehaviour
             {
                 var incommingData = new byte[bytesRead];
                 Array.Copy(bytes, 0, incommingData, 0, bytesRead);
-                string serverMessage = Encoding.ASCII.GetString(incommingData);
-                Debug.Log("server message received");
+                string serverMessageBuffer = Encoding.ASCII.GetString(incommingData);
+                serverMessage += serverMessageBuffer;
 
+                Debug.Log("server message received");
+                Debug.Log(serverMessage);
 
 
                 if (serverMessage.Substring(serverMessage.Length - 4) == "eod.")
                 {
                     if (serverMessage == "END.eod.")
                     {
-                        Debug.Log("End Session set");
                         endSession = true;
+                        Debug.Log("endSession set to true");
                     }
                     else
                     {
                         jsonparameters = serverMessage.Substring(0, serverMessage.IndexOf("eod.", StringComparison.Ordinal - 1));
                         captureChangeRequest = true;
                         sceneShotProcessed = false;
-                        //Set all object's Render Status to false
+
+                        //Set every object's Render Status to false
                         for (int i = 0; i < numberOfObjects; i++)
                         {
                             objectParametersSet[i] = false;
                         }
                         CaptureParameters = JsonUtility.FromJson<JSONCaptureParameters>(jsonparameters);
                         Debug.Log(CaptureParameters.message);
+                        Debug.Log(CaptureParameters.Object0.scale);
+                        //Debug.Log(CaptureParameters.Object0.scale.GetType());
+                        if (CaptureParameters.Object0.scale == null)
+                        {
+                            Debug.Log("Null!! Yes");
+                        } 
                     }
                     break;
                 }
             }
-            Debug.Log("ListenFromServer(): break");
+            Debug.Log("exit ListenFromServer()");
             break;
         }
     }
@@ -160,13 +169,14 @@ public class TCPCaptureChanges : MonoBehaviour
 
     void RespondBytesToServer(byte[] bytesPNG, string metaPNG)
     {
-        byte[] clientMessageEndTag = { 255, 255, 255, 255, 255, 255, 255, 255 };
+        byte[] clientMessageEndTag = { 255, 0, 250, 251, 252, 253, 254, 255 };
         try
         {
             // Get a stream object for writing.
             if (stream.CanWrite)
             {
                 byte[] metaBytes = Encoding.ASCII.GetBytes(metaPNG);
+                Debug.Log("meta data bytes count: " + metaBytes.Length.ToString());
                 int metaLength = metaBytes.Length;
 
                 // Write byte array to socketConnection stream.

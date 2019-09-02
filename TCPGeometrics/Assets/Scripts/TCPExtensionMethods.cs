@@ -76,38 +76,6 @@ public class JSONCaptureCamObject : JSONCaptureObject
 }
 
 
-
-[System.Serializable]
-public class JSONSceneShot
-{
-    public string status;
-    public int sceneID;
-    public int width;
-    public int height;
-    //public string png_string;
-    // Multidimensional arrays can't be read by json serializer :-(
-    //public int[,,] pixels;
-    public int[] r_pixels;
-    public int[] g_pixels;
-    public int[] b_pixels;
-    public int[] a_pixels;
-
-    public JSONSceneShot(string status, int sceneID, int width, int height, int[] r_pixels, int[] g_pixels, int[] b_pixels, int[] a_pixels)
-    {
-        this.status = status;
-        this.sceneID = sceneID;
-        this.width = width;
-        this.height = height;
-        //this.png_string = png_string;
-        this.r_pixels = r_pixels;
-        this.g_pixels = g_pixels;
-        this.b_pixels = b_pixels;
-        this.a_pixels = a_pixels;
-        //this.pixels = pixels;
-    }
-}
-
-
 [System.Serializable]
 public class JSONPNGmetadata
 {
@@ -118,6 +86,12 @@ public class JSONPNGmetadata
     public JSONPNGmetadata(int sceneID)
     {
         this.sceneID = sceneID;
-        this.message = "This is a test message";
+        this.message = "This is the dafault message";
+    }
+
+    public JSONPNGmetadata(int sceneID, string message)
+    {
+        this.sceneID = sceneID;
+        this.message = message;
     }
 }
