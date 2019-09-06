@@ -1,0 +1,8 @@
+{
+  "message": "Paramter JSON File no 2: Delta Obj 1, fieldOfView",
+  "sceneID": 2,
+  "Object0": {
+    "position": [-5,12.65,-9],
+    "fieldOfView": 20
+  }
+}

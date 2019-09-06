@@ -162,8 +162,18 @@ class UnityCommunicator:
 if __name__ == '__main__':
 
     with UnityCommunicator() as uc:
-        jsondata = uc.readJsonFile('parameters_geometrics_simple.json')
+        jsondata = uc.readJsonFile('parameters_geometrics1.json')
         img, sceneID = uc.renderParameters(jsondata)
+        Image.fromarray(img).save('FinalPictureID-' + str(sceneID) + '.png')
+
+        # jsondata = uc.readJsonFile('parameters_geometrics2.json')
+        # img, sceneID = uc.renderParameters(jsondata)
+        # Image.fromarray(img).save('FinalPictureID-' + str(sceneID) + '.png')
+        #
+        # jsondata = uc.readJsonFile('parameters_geometrics3yx.json')
+        # img, sceneID = uc.renderParameters(jsondata)
+        # Image.fromarray(img).save('FinalPictureID-' + str(sceneID) + '.png')
+
 
 
     ## TODO: debugging code, to be deleted
@@ -172,3 +182,7 @@ if __name__ == '__main__':
 
     imgPIL = Image.fromarray(img)
     imgPIL.save('FinalPicture.png')
+
+
+
+# "intensity":18.12,
