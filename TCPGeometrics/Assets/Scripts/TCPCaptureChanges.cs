@@ -19,6 +19,7 @@ public class TCPCaptureChanges : MonoBehaviour
     [HideInInspector] public bool sceneShotProcessed; //tells, if next parameters can be received
     [HideInInspector] public JSONCaptureParameters CaptureParameters;
 
+
     private string jsontcpconfig;
     private string jsonparameters;
     private bool readyToCapture;
@@ -151,9 +152,11 @@ public class TCPCaptureChanges : MonoBehaviour
                         }
                         CaptureParameters = JsonUtility.FromJson<JSONCaptureParameters>(jsonparameters);
                         Debug.Log(CaptureParameters.message);
-                        Debug.Log(CaptureParameters.Object0.scale);
+                        Debug.Log(CaptureParameters.Object0.orthographic);
+                        Debug.Log(CaptureParameters.Object1.orthographic);
+                        Debug.Log(CaptureParameters.Object2.orthographic);
                         //Debug.Log(CaptureParameters.Object0.scale.GetType());
-                        if (CaptureParameters.Object0.scale == null)
+                        if (CaptureParameters.Object0.orthographic == null)
                         {
                             Debug.Log("Null!! Yes");
                         } 
