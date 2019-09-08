@@ -1,0 +1,16 @@
+#!/bin/bash
+
+echo "Syncing unity scripts from TCPGeometrics to git archive..."
+
+cp /Users/KonstantinN/OneDrive/Dokumente/1_STUDIUM/_2019-SS/INFAP/Unity/TCPGeometrics/Assets/Scripts/TCPCaptureChanges.cs /Users/KonstantinN/OneDrive/Dokumente/1_STUDIUM/_2019-SS/INFAP/DEV/unitycommunicator/TCPGeometrics/Assets/Scripts
+
+cp /Users/KonstantinN/OneDrive/Dokumente/1_STUDIUM/_2019-SS/INFAP/Unity/TCPGeometrics/Assets/Scripts/TCPExtensionMethods.cs /Users/KonstantinN/OneDrive/Dokumente/1_STUDIUM/_2019-SS/INFAP/DEV/unitycommunicator/TCPGeometrics/Assets/Scripts
+
+cp /Users/KonstantinN/OneDrive/Dokumente/1_STUDIUM/_2019-SS/INFAP/Unity/TCPGeometrics/Assets/Scripts/TCPGameObjectController.cs /Users/KonstantinN/OneDrive/Dokumente/1_STUDIUM/_2019-SS/INFAP/DEV/unitycommunicator/TCPGeometrics/Assets/Scripts
+
+cp /Users/KonstantinN/OneDrive/Dokumente/1_STUDIUM/_2019-SS/INFAP/Unity/TCPGeometrics/Assets/Scripts/TCPoldCode.cs /Users/KonstantinN/OneDrive/Dokumente/1_STUDIUM/_2019-SS/INFAP/DEV/unitycommunicator/TCPGeometrics/Assets/Scripts
+
+cp /Users/KonstantinN/OneDrive/Dokumente/1_STUDIUM/_2019-SS/INFAP/Unity/TCPGeometrics/Assets/Scenes/TCPOnly.unity /Users/KonstantinN/OneDrive/Dokumente/1_STUDIUM/_2019-SS/INFAP/DEV/unitycommunicator/TCPGeometrics/Assets/Scenes
+
+
+echo "Sync completed"

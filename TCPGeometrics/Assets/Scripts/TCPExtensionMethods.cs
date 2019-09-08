@@ -57,6 +57,7 @@ public class JSONCaptureObjectGeneric
     public float[] position;
     public float[] scale;
     public float[] rotation;
+    public string info;
 
 
     //Light Object
@@ -88,7 +89,7 @@ public class JSONCaptureObjectGeneric
         Camera camera = targetObject.GetComponent<Camera>();
         Vector3 rgb;
 
-        Debug.Log("Set Parameters entered");
+        Debug.Log("Set Parameters entered, info: " + this.info);
 
         //set Kinematics (pos, scale, rot)
         targetObject.transform.position = new Vector3(this.position[0], this.position[1], this.position[2]);
@@ -170,45 +171,5 @@ public class JSONPNGmetadata
         this.message = message;
     }
 }
-
-
-
-// old code
-
-
-[System.Serializable]
-public class JSONCaptureObject
-{
-    public float[] position;
-    public float[] scale;
-    public float[] rotation;
-}
-
-[System.Serializable]
-public class JSONCaptureGeomObject : JSONCaptureObject
-{
-    public float[] color;
-    public float? intensity;
-    public float? transparency;
-    public float? metallic;
-    public float? glossiness;
-}
-
-[System.Serializable]
-public class JSONCaptureLightObject : JSONCaptureObject
-{
-    public float[] color;
-    public float? intensity;
-    public bool? active;
-    public float? range;
-    public float? spotAngle;
-}
-[System.Serializable]
-public class JSONCaptureCamObject : JSONCaptureObject
-{
-    public bool? orthographic;
-    public float? fieldOfView;
-}
-
 
 
