@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+//using Newtonsoft.Json;
 
 public class TCPExtensionMethods
 {
@@ -50,6 +51,132 @@ public class JSONCaptureParameters
 }
 
 [System.Serializable]
+public class JSONCaptureObjectGeneric
+{
+    //Kinematics & Co
+    public float[] position;
+    public float[] scale;
+    public float[] rotation;
+
+
+    //Light Object
+    public float[] colorOfLight;
+    public float intensity;
+    public bool active;
+    public float range;
+    public float spotAngle;
+
+
+    //Camera Object
+    public bool orthographic;
+    public float orthographicSize;
+    public float fieldOfView;
+
+
+    //3D Game Object
+    public float transparency;
+    public float[] color;
+    public float metallic;
+    public float glossiness;
+
+
+
+    public void SetParameters(GameObject targetObject)
+    {
+        Renderer rend = targetObject.GetComponent<Renderer>();
+        Light light = targetObject.GetComponent<Light>();
+        Camera camera = targetObject.GetComponent<Camera>();
+        Vector3 rgb;
+
+        Debug.Log("Set Parameters entered");
+
+        //set Kinematics (pos, scale, rot)
+        targetObject.transform.position = new Vector3(this.position[0], this.position[1], this.position[2]);
+        targetObject.transform.eulerAngles = new Vector3(this.rotation[0], this.rotation[1], this.rotation[2]);
+        targetObject.transform.localScale = new Vector3(this.scale[0], this.scale[1], this.scale[2]);
+
+        Debug.Log("Position set to " + targetObject.transform.position.ToString() +
+            " ; Rotation set to " + targetObject.transform.eulerAngles.ToString() +
+            " ; Scale set to " + targetObject.transform.localScale.ToString());
+
+
+        if (rend != null)
+        //set paramters 3DGameObject
+        {
+            Debug.Log("3DGameObject");
+            rgb = new Vector3(this.color[0], this.color[1], this.color[2]);
+            rend.material.color = new Color(rgb.x, rgb.y, rgb.z, this.transparency);
+            rend.material.SetFloat("_Metallic", (float)this.metallic);
+            rend.material.SetFloat("_Glossiness", (float)this.glossiness);
+        }
+        else if (light != null)
+        //set parameters of light
+        {
+            Debug.Log("LIGHT");
+            //Set color and intenstity of light
+            light.color = new Color(this.colorOfLight[0], this.colorOfLight[1], this.colorOfLight[2], 1);
+            light.intensity = this.intensity;
+
+            //Set active
+            light.enabled = this.active;
+
+            //light parameters
+            if ((light.type == LightType.Spot || light.type == LightType.Point))
+            {
+                light.range = this.range;
+            }
+
+            if (light.type == LightType.Spot)
+            {
+                light.spotAngle = this.spotAngle;
+            }
+        }
+        else if (camera != null)
+        //set camera parameters
+        {
+            Debug.Log("CAMERA");
+
+            camera.orthographic = this.orthographic;
+
+            if (camera.orthographic == true)
+            {
+                camera.orthographicSize = this.orthographicSize;
+            }
+            else
+            {
+                camera.fieldOfView = this.fieldOfView;
+            }
+        }
+    }
+}
+
+
+[System.Serializable]
+public class JSONPNGmetadata
+{
+    public int sceneID;
+    public string message;
+    //Add whatever data you want or need to send
+
+    public JSONPNGmetadata(int sceneID)
+    {
+        this.sceneID = sceneID;
+        this.message = "This is the dafault message";
+    }
+
+    public JSONPNGmetadata(int sceneID, string message)
+    {
+        this.sceneID = sceneID;
+        this.message = message;
+    }
+}
+
+
+
+// old code
+
+
+[System.Serializable]
 public class JSONCaptureObject
 {
     public float[] position;
@@ -83,169 +210,5 @@ public class JSONCaptureCamObject : JSONCaptureObject
     public float? fieldOfView;
 }
 
-[System.Serializable]
-public class JSONCaptureObjectGeneric
-{
-    public float[] position;
-    public float[] scale;
-    public float[] rotation;
-    public float[] color;
-    public float[] colorOfLight;
-    public float? intensity;
-    public float? intensityOfLight;
-    public float? transparency;
-    public float? metallic;
-    public float? glossiness;
-    public int? active; //to be converted to bool, 0 = false, anything else is true
-    public float? range;
-    public float? spotAngle;
-    public int? orthographic; //to be converted to bool, 0 = false, anything else is true
-    public float? orthographicSize;
-    public float? fieldOfView;
-
-    public void SetParameters(GameObject targetObject)
-    {
-        Renderer rend = targetObject.GetComponent<Renderer>();
-        Light light = targetObject.GetComponent<Light>();
-        Camera camera = targetObject.GetComponent<Camera>();
-        Vector3 rgb;
-        float transp;
-
-        Debug.Log("Set Parameters entered");
-
-        //set transform
-        if (this.position != null)
-        {
-            targetObject.transform.position = new Vector3(this.position[0], this.position[1], this.position[2]);
-            Debug.Log("Position applied to " + targetObject.transform.position.ToString());
-        }
-        if (this.rotation != null)
-        {
-            targetObject.transform.eulerAngles = new Vector3(this.rotation[0], this.rotation[1], this.rotation[2]);
-        }
-        if (this.scale != null)
-        {
-            targetObject.transform.localScale = new Vector3(this.scale[0], this.scale[1], this.scale[2]);
-        }
 
 
-        if (rend != null)
-        {
-            //Set Color and Intensity
-            if (this.color != null)
-            {
-                rgb = new Vector3(this.color[0], this.color[1], this.color[2]);
-            }
-            else
-            {
-                rgb = new Vector3(rend.material.color[0], rend.material.color[1], rend.material.color[2]);
-            }
-            if (this.transparency != null)
-            {
-                transp = (float)this.transparency;
-            }
-            else
-            {
-                transp = rend.material.color[3];
-            }
-            rend.material.color = new Color(rgb.x, rgb.y, rgb.z, transp);
-
-            //metallic and glossiness
-            if (this.metallic != null)
-            {
-                rend.material.SetFloat("_Metallic", (float)this.metallic);
-            }
-            if (this.glossiness != null)
-            {
-                rend.material.SetFloat("_Glossiness", (float)this.glossiness);
-            }
-        }
-        else if(light != null)
-        {
-            //Set color and intenstity of light
-            if (this.colorOfLight != null)
-            {
-                light.color = new Color(this.colorOfLight[0], this.colorOfLight[1], this.colorOfLight[2], 1);
-            }
-            if (this.intensityOfLight != null)
-            {
-                light.intensity = (float)intensityOfLight;
-            }
-
-            //Set active
-            if (this.active != null)
-            {
-                if((int)this.active == 0)
-                {
-                    light.enabled = false;
-                } else
-                {
-                    light.enabled = true;
-                }
-
-                
-            }
-
-            //light parameters
-            if (this.range != null && (light.type == LightType.Spot || light.type == LightType.Point))
-            {
-                light.range = (float)this.range;
-            }
-
-            if (this.spotAngle != null && light.type == LightType.Spot)
-            {
-                light.spotAngle = (float)this.spotAngle;
-            }
-        }
-
-        //camera parameters
-        else if(camera != null)
-        {
-            Debug.Log("CAMERA");
-            //Debug.Log(((int)this.orthographic).ToString());
-            if (this.orthographic.Value != 0)
-            {
-                if ((int)this.orthographic == 0)
-                {
-                    camera.orthographic = false;
-                }
-                else
-                {
-                    camera.orthographic = true;
-                }
-                
-                Debug.Log("orthographic set");
-            }
-            if (camera.orthographic == true && this.orthographicSize != null)
-            {
-                camera.orthographicSize = (float)this.orthographicSize;
-            }
-            if (camera.orthographic == false && this.fieldOfView != null)
-            {
-                camera.fieldOfView = (float)this.fieldOfView;
-                Debug.Log("fov set");
-            }
-        }
-    }
-}
-
-
-[System.Serializable]
-public class JSONPNGmetadata
-{
-    public int sceneID;
-    public string message;
-    //Add whatever data you want or need to send
-
-    public JSONPNGmetadata(int sceneID)
-    {
-        this.sceneID = sceneID;
-        this.message = "This is the dafault message";
-    }
-
-    public JSONPNGmetadata(int sceneID, string message)
-    {
-        this.sceneID = sceneID;
-        this.message = message;
-    }
-}

@@ -151,15 +151,23 @@ public class TCPCaptureChanges : MonoBehaviour
                             objectParametersSet[i] = false;
                         }
                         CaptureParameters = JsonUtility.FromJson<JSONCaptureParameters>(jsonparameters);
-                        Debug.Log(CaptureParameters.message);
-                        Debug.Log(CaptureParameters.Object0.orthographic);
-                        Debug.Log(CaptureParameters.Object1.orthographic);
-                        Debug.Log(CaptureParameters.Object2.orthographic);
+                        Debug.Log("message " + CaptureParameters.message);
+                        Debug.Log("ortho 0" + CaptureParameters.Object0.Orthographic.ToString());
+                        Debug.Log("ortho 1" + CaptureParameters.Object1.Orthographic.ToString());
+                        Debug.Log("ortho 2" + CaptureParameters.Object2.Orthographic.ToString());
+                        Debug.Log("inteslight 1" + CaptureParameters.Object1.intensityOfLight.Value.ToString());
                         //Debug.Log(CaptureParameters.Object0.scale.GetType());
-                        if (CaptureParameters.Object0.orthographic == null)
+                        if (CaptureParameters.Object1.intensity.HasValue)
+                        {
+                            Debug.Log("intens 1 has value");
+                        }
+                        if (CaptureParameters.Object0.Orthographic != null)
                         {
                             Debug.Log("Null!! Yes");
-                        } 
+                        } else
+                        {
+                            Debug.Log("... null");
+                        }
                     }
                     break;
                 }
@@ -208,12 +216,10 @@ public class TCPCaptureChanges : MonoBehaviour
 
         var sceneTexture = ScreenCapture.CaptureScreenshotAsTexture();
         byte[] bytesPNG = sceneTexture.EncodeToPNG();
-        //File.WriteAllBytes(Application.streamingAssetsPath + "/Encoded/SavedScreen" + count_enum.ToString() + ".png", bytesPNG); //Debugging to be deleted
-        //count_enum++;
 
         Destroy(sceneTexture);
 
-        Debug.Log("PNG bytes: " + bytesPNG.Length.ToString());
+        Debug.Log("PNG bytes count: " + bytesPNG.Length.ToString());
 
         //initialize metadata for image
         JSONPNGmetadata jsonPNGmeta = new JSONPNGmetadata(CaptureParameters.sceneID);
