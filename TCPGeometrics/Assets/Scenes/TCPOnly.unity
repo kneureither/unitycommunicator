@@ -227,6 +227,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   objectID: 5
   manageCapture: {fileID: 137473200}
+  targetObject: {fileID: 0}
 --- !u!1 &60153109
 GameObject:
   m_ObjectHideFlags: 0
@@ -331,62 +332,51 @@ MonoBehaviour:
       position: []
       scale: []
       rotation: []
+      color: []
+      colorOfLight: []
       orthographic: 0
-      fieldOfView: 0
     Object1:
       position: []
       scale: []
       rotation: []
       color: []
-      intensity: 0
-      active: 0
-      range: 0
-      spotAngle: 0
+      colorOfLight: []
+      orthographic: 0
     Object2:
       position: []
       scale: []
       rotation: []
       color: []
-      intensity: 0
-      active: 0
-      range: 0
-      spotAngle: 0
+      colorOfLight: []
+      orthographic: 0
     Object3:
       position: []
       scale: []
       rotation: []
       color: []
-      intensity: 0
-      active: 0
-      range: 0
-      spotAngle: 0
+      colorOfLight: []
+      orthographic: 0
     Object4:
       position: []
       scale: []
       rotation: []
       color: []
-      intensity: 0
-      transparency: 0
-      metallic: 0
-      glossiness: 0
+      colorOfLight: []
+      orthographic: 0
     Object5:
       position: []
       scale: []
       rotation: []
       color: []
-      intensity: 0
-      transparency: 0
-      metallic: 0
-      glossiness: 0
+      colorOfLight: []
+      orthographic: 0
     Object6:
       position: []
       scale: []
       rotation: []
       color: []
-      intensity: 0
-      transparency: 0
-      metallic: 0
-      glossiness: 0
+      colorOfLight: []
+      orthographic: 0
 --- !u!4 &137473202
 Transform:
   m_ObjectHideFlags: 0
@@ -514,6 +504,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   objectID: 1
   manageCapture: {fileID: 137473200}
+  targetObject: {fileID: 0}
 --- !u!1 &534669902
 GameObject:
   m_ObjectHideFlags: 0
@@ -566,7 +557,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 27.6
+  field of view: 44
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -591,13 +582,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 534669902}
-  m_LocalRotation: {x: 0.31575647, y: 0.36111948, z: -0.1314367, w: 0.8675339}
-  m_LocalPosition: {x: -9.9, y: 14.54, z: -9.97}
+  m_LocalRotation: {x: 0.31598538, y: 0.3596048, z: -0.13088542, w: 0.8681629}
+  m_LocalPosition: {x: -8.92, y: 12.65, z: -9.97}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 137473202}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 40, y: 45.2, z: 0}
+  m_LocalEulerAnglesHint: {x: 40, y: 45, z: 0}
 --- !u!114 &534669907
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -612,6 +603,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   objectID: 0
   manageCapture: {fileID: 137473200}
+  targetObject: {fileID: 0}
 --- !u!1 &734881835
 GameObject:
   m_ObjectHideFlags: 0
@@ -637,13 +629,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 734881835}
-  m_LocalRotation: {x: 0.40821788, y: -0.23456968, z: 0.10938163, w: 0.8754261}
-  m_LocalPosition: {x: -2.4440002, y: 0.80803907, z: -1.2682325}
+  m_LocalRotation: {x: 0.41781884, y: -0.23335281, z: 0.111954205, w: 0.8708847}
+  m_LocalPosition: {x: -2.57, y: 0.80803907, z: -1.2682325}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 137473202}
   m_RootOrder: 3
-  m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+  m_LocalEulerAnglesHint: {x: 51.26, y: -30, z: 0}
 --- !u!108 &734881837
 Light:
   m_ObjectHideFlags: 0
@@ -655,7 +647,7 @@ Light:
   serializedVersion: 9
   m_Type: 1
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 0.42
+  m_Intensity: 0.31
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.802082
@@ -718,6 +710,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   objectID: 3
   manageCapture: {fileID: 137473200}
+  targetObject: {fileID: 0}
 --- !u!1 &758673971
 GameObject:
   m_ObjectHideFlags: 0
@@ -853,7 +846,7 @@ Light:
   serializedVersion: 9
   m_Type: 2
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 5
+  m_Intensity: 6.59
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.802082
@@ -916,6 +909,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   objectID: 2
   manageCapture: {fileID: 137473200}
+  targetObject: {fileID: 0}
 --- !u!1 &1320247532
 GameObject:
   m_ObjectHideFlags: 0
@@ -964,6 +958,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   objectID: 6
   manageCapture: {fileID: 137473200}
+  targetObject: {fileID: 0}
 --- !u!136 &1320247535
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -1130,3 +1125,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   objectID: 4
   manageCapture: {fileID: 137473200}
+  targetObject: {fileID: 0}

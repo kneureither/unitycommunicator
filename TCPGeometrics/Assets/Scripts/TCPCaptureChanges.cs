@@ -152,22 +152,10 @@ public class TCPCaptureChanges : MonoBehaviour
                         }
                         CaptureParameters = JsonUtility.FromJson<JSONCaptureParameters>(jsonparameters);
                         Debug.Log("message " + CaptureParameters.message);
-                        Debug.Log("ortho 0" + CaptureParameters.Object0.Orthographic.ToString());
-                        Debug.Log("ortho 1" + CaptureParameters.Object1.Orthographic.ToString());
-                        Debug.Log("ortho 2" + CaptureParameters.Object2.Orthographic.ToString());
-                        Debug.Log("inteslight 1" + CaptureParameters.Object1.intensityOfLight.Value.ToString());
-                        //Debug.Log(CaptureParameters.Object0.scale.GetType());
-                        if (CaptureParameters.Object1.intensity.HasValue)
-                        {
-                            Debug.Log("intens 1 has value");
-                        }
-                        if (CaptureParameters.Object0.Orthographic != null)
-                        {
-                            Debug.Log("Null!! Yes");
-                        } else
-                        {
-                            Debug.Log("... null");
-                        }
+                        Debug.Log("ortho 0" + CaptureParameters.Object0.orthographic.ToString());
+                        Debug.Log("ortho 1" + CaptureParameters.Object1.orthographic.ToString());
+                        Debug.Log("ortho 2" + CaptureParameters.Object2.orthographic.ToString());
+                        Debug.Log("inteslight 1" + CaptureParameters.Object1.intensity.ToString());
                     }
                     break;
                 }
