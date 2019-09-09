@@ -170,7 +170,6 @@ class UnityCommunicator:
 
 
 if __name__ == '__main__':
-
     with UnityCommunicator() as uc:
         jsondata = uc.readJsonFile('ParameterFiles/parameters_geometrics0.json')
         img, sceneID = uc.renderParameters(jsondata)
