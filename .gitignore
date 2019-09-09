@@ -9,7 +9,7 @@ syncunity.txt
 
 # hidden files
 
-# .*
+.*
 
 # <name>/ = Directory
 # *.log = all log files
