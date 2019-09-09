@@ -49,7 +49,7 @@ public class TCPGameObjectController : MonoBehaviour
             Debug.Log("SetJSONparamters of Object " + this.objectID.ToString());
             //Function call of JSON base class (TCPExtensionMethods)
             manager.CaptureParameters.Objects[objectID].SetParameters(targetObject, this.objectID);
-            //array for handling object status (new parameters set? (bool)
+            //array for handling object status (new parameters set? (bool))
             manager.objectParametersSet[objectID] = true;
         }
     }
