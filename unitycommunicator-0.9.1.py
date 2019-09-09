@@ -18,7 +18,7 @@ class UnityCommunicator:
         self.fh.setFormatter(self.formatter)
 
         #Clear log at startup if it is longer than 1000 lines
-        with f as open('LOG/unity-communicator.log', 'r'):
+        with open('LOG/unity-communicator.log', 'r') as f:
             loglength = len(f.readlines())
 
         if loglength > 1000:
