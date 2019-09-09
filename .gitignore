@@ -1,0 +1,14 @@
+# Log Files and Debugging
+
+LOG/**
+DEBBUGGING/**
+
+# bash tools
+
+syncunity.txt
+
+
+# <name>/ = Directory
+# *.log = all log files
+# **/<name> = dir or file in any subfolder
+# <name>/** = everything inside dir
