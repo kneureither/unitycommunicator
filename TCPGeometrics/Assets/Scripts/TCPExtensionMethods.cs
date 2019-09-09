@@ -98,7 +98,7 @@ public class JSONCaptureObjectGeneric
             }
             catch (System.NullReferenceException NullException)
             {
-                Debug.Log("ERROR : " + NullException + "\nPlease check info, pos, rot, scale paramters in json dict");
+                Debug.Log("ERROR : " + NullException + "\nPlease check 3DGameObject paramters in json dict for objectID " + objectID.ToString());
             }
             
         }
@@ -106,39 +106,55 @@ public class JSONCaptureObjectGeneric
         //set parameters of light
         {
             Debug.Log("Set parameters of LIGHT...");
-            //Set color and intenstity of light
-            light.color = new Color(this.colorOfLight[0], this.colorOfLight[1], this.colorOfLight[2], 1);
-            light.intensity = this.intensity;
-
-            //Set active
-            light.enabled = this.active;
-
-            //light parameters
-            if ((light.type == LightType.Spot || light.type == LightType.Point))
+            try
             {
-                light.range = this.range;
+                //Set color and intenstity of light
+                light.color = new Color(this.colorOfLight[0], this.colorOfLight[1], this.colorOfLight[2], 1);
+                light.intensity = this.intensity;
+
+                //Set active
+                light.enabled = this.active;
+
+                //light parameters
+                if ((light.type == LightType.Spot || light.type == LightType.Point))
+                {
+                    light.range = this.range;
+                }
+
+                if (light.type == LightType.Spot)
+                {
+                    light.spotAngle = this.spotAngle;
+                }
+            }
+            catch (System.NullReferenceException NullException)
+            {
+                Debug.Log("ERROR : " + NullException + "\nPlease check light paramters in json dict for objectID " + objectID.ToString());
             }
 
-            if (light.type == LightType.Spot)
-            {
-                light.spotAngle = this.spotAngle;
-            }
+
         }
         else if (camera != null)
         //set camera parameters
         {
             Debug.Log("Set parameters of CAMERA...");
-
-            camera.orthographic = this.orthographic;
-
-            if (camera.orthographic == true)
+            try
             {
-                camera.orthographicSize = this.orthographicSize;
+                camera.orthographic = this.orthographic;
+
+                if (camera.orthographic == true)
+                {
+                    camera.orthographicSize = this.orthographicSize;
+                }
+                else
+                {
+                    camera.fieldOfView = this.fieldOfView;
+                }
             }
-            else
+            catch (System.NullReferenceException NullException)
             {
-                camera.fieldOfView = this.fieldOfView;
+                Debug.Log("ERROR : " + NullException + "\nPlease check camera paramters in json dict for objectID " + objectID.ToString());
             }
+
         }
     }
 }
