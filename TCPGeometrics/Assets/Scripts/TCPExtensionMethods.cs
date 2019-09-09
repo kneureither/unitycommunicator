@@ -4,10 +4,9 @@ using UnityEngine;
 
 public class TCPExtensionMethods
 {
-    
 }
 
-//Json Object Templates
+//Json Object Templates *****************************************************************
 
 [System.Serializable]
 public class TcpConfigParameters
@@ -17,18 +16,23 @@ public class TcpConfigParameters
 }
 
 [System.Serializable]
+//JSON representation for Serializing of received parameters
 public class JSONCaptureParameters
 {
     public string message;
     public int sceneID;
 
-    public JSONCaptureObjectGeneric[] Objects;
+    public JSONCaptureGenericObject[] Objects;
 
 }
 
 [System.Serializable]
-public class JSONCaptureObjectGeneric
+// representation of Generic GameObject (Camera, Light, 3Dobject)
+// void SetParamters(targetObject, objectID) sets parameters of targetObject
+public class JSONCaptureGenericObject
 {
+    //When performing changes in member region, also SetParamters() must be updated
+
     //Kinematics & Co
     public float[] position;
     public float[] scale;
@@ -161,6 +165,7 @@ public class JSONCaptureObjectGeneric
 
 
 [System.Serializable]
+//JSON representation of meta data of response message
 public class JSONPNGmetadata
 {
     public int sceneID;

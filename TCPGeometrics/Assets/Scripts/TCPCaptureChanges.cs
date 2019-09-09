@@ -17,14 +17,13 @@ public class TCPCaptureChanges : MonoBehaviour
     [HideInInspector] public bool[] objectParametersSet; //tells, if every object is set to new json parameters
     [HideInInspector] public bool captureChangeRequest; //tells, if there are new paramteres to render
     [HideInInspector] public bool sceneShotProcessed; //tells, if next parameters can be received
-    [HideInInspector] public JSONCaptureParameters CaptureParameters;
+    [HideInInspector] public JSONCaptureParameters CaptureParameters; //stores all received parameters for scene (accessed by TCPGameObjectController)
 
 
     private string jsontcpconfig;
     private string jsonparameters;
     private bool readyToCapture;
     private bool endSession;
-    private int count_update; //temp, delete after debug
     private TcpClient client;
     private NetworkStream stream;
     private TcpConfigParameters Tcpconfig;
@@ -44,7 +43,6 @@ public class TCPCaptureChanges : MonoBehaviour
 
         //Set global values
         readyToCapture = false;
-        count_update = 0;
         endSession = false;
         captureChangeRequest = false;
         sceneShotProcessed = true;
@@ -54,8 +52,6 @@ public class TCPCaptureChanges : MonoBehaviour
 
     private void Update()
     {
-        Debug.Log("This is update, count: " + count_update.ToString());
-
         if (sceneShotProcessed)
         {
             ListenFromServer();
@@ -71,7 +67,6 @@ public class TCPCaptureChanges : MonoBehaviour
                 Debug.Log("CaptureChange is True");
             }
         }
-        count_update++;
     }
 
     // LateUpdate is called after all Updates are executed
@@ -150,10 +145,6 @@ public class TCPCaptureChanges : MonoBehaviour
                         }
                         CaptureParameters = JsonUtility.FromJson<JSONCaptureParameters>(jsonparameters);
                         Debug.Log("message " + CaptureParameters.message);
-                        //Debug.Log("ortho 0" + CaptureParameters.Object0.orthographic.ToString());
-                        //Debug.Log("ortho 1" + CaptureParameters.Object1.orthographic.ToString());
-                        //Debug.Log("ortho 2" + CaptureParameters.Object2.orthographic.ToString());
-                        //Debug.Log("inteslight 1" + CaptureParameters.Object1.intensity.ToString());
                     }
                     break;
                 }
@@ -165,7 +156,7 @@ public class TCPCaptureChanges : MonoBehaviour
 
 
     void RespondBytesToServer(byte[] bytesPNG, string metaPNG)
-    {
+    { 
         byte[] clientMessageEndTag = { 255, 0, 250, 251, 252, 253, 254, 255 };
         try
         {
