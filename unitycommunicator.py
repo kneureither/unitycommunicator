@@ -9,6 +9,16 @@ import io
 class UnityCommunicator:
 
     def __init__(self):
+        """Sets up logger, TCP connection and global variables.
+        Executed, when using the class in a with..as statement.
+
+        Parameters
+        ---------
+        none
+
+        """
+
+
         self.logger = logging.getLogger('unity-com')
         self.logger.setLevel(logging.DEBUG)
         self.fh = logging.FileHandler('LOG/unity-communicator.log')
@@ -36,14 +46,37 @@ class UnityCommunicator:
         ## TODO: Vielleicht hier noch standard konfiguration als parameter0 schicken
 
     def __enter__(self):
+    """returns class if used in with statement.
+
+    Returns:
+    -------
+    self : UnityCommunicator
+           For use in "with UnityCommunicator() as:"
+    """
         return self
 
-    def __exit__(self, type, value, traceback):
+    def __exit__(self, type, value, traceback):#
+    """sends end request to Unity, closes TCP connection. Executed when used in with statement"""
         self._sendData('END.')
         self.logger.debug('end command sent')
         self.conn_unity.close()
 
     def _setup_server(self):
+    """Sets up TCP server. Therefore it looks for a free port in range (50000, 50099) and stores
+    the used port in File of Unity project at /StreamingAssets/tcpconfig.json. Unity reads the port and accepts the connection.
+
+    Returns:
+    --------
+    socket.socket
+                 the socket connection to unity
+
+    Raises:
+    --------
+    FileNotFoundError
+            tcpconfig.json in StreamingAssets Folder of UnityProject can not be found
+    socket.error
+            to catch if socket is in use
+    """
 
         try:
             with open(self.path + 'tcpconfig.json', 'r') as f:
@@ -170,7 +203,6 @@ class UnityCommunicator:
 
 
 if __name__ == '__main__':
-
     with UnityCommunicator() as uc:
         jsondata = uc.readJsonFile('ParameterFiles/parameters_geometrics0.json')
         img, sceneID = uc.renderParameters(jsondata)
