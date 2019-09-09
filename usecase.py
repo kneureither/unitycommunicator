@@ -1,6 +1,6 @@
-import UnityCommunicator
+import unitycommunicator
 
-with UnityCommunicator() as uc:
+with unitycommunicator.UnityCommunicator() as uc:
     jsondata = uc.readJsonFile('ParameterFiles/parameters_geometrics0.json')
     img, sceneID = uc.renderParameters(jsondata)
     Image.fromarray(img).save('SavedScenes/FinalPictureID-' + str(sceneID) + '.png')
