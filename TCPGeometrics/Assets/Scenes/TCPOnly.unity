@@ -328,55 +328,7 @@ MonoBehaviour:
   CaptureParameters:
     message: 
     sceneID: 0
-    Object0:
-      position: []
-      scale: []
-      rotation: []
-      color: []
-      colorOfLight: []
-      orthographic: 0
-    Object1:
-      position: []
-      scale: []
-      rotation: []
-      color: []
-      colorOfLight: []
-      orthographic: 0
-    Object2:
-      position: []
-      scale: []
-      rotation: []
-      color: []
-      colorOfLight: []
-      orthographic: 0
-    Object3:
-      position: []
-      scale: []
-      rotation: []
-      color: []
-      colorOfLight: []
-      orthographic: 0
-    Object4:
-      position: []
-      scale: []
-      rotation: []
-      color: []
-      colorOfLight: []
-      orthographic: 0
-    Object5:
-      position: []
-      scale: []
-      rotation: []
-      color: []
-      colorOfLight: []
-      orthographic: 0
-    Object6:
-      position: []
-      scale: []
-      rotation: []
-      color: []
-      colorOfLight: []
-      orthographic: 0
+    Objects: []
 --- !u!4 &137473202
 Transform:
   m_ObjectHideFlags: 0
@@ -630,7 +582,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 734881835}
   m_LocalRotation: {x: 0.41781884, y: -0.23335281, z: 0.111954205, w: 0.8708847}
-  m_LocalPosition: {x: -2.57, y: 0.80803907, z: -1.2682325}
+  m_LocalPosition: {x: 0, y: 0, z: -1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 137473202}
@@ -846,7 +798,7 @@ Light:
   serializedVersion: 9
   m_Type: 2
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 6.59
+  m_Intensity: 5.17
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.802082

@@ -25,7 +25,6 @@ public class TCPCaptureChanges : MonoBehaviour
     private bool readyToCapture;
     private bool endSession;
     private int count_update; //temp, delete after debug
-    private int count_captsend;
     private TcpClient client;
     private NetworkStream stream;
     private TcpConfigParameters Tcpconfig;
@@ -46,7 +45,6 @@ public class TCPCaptureChanges : MonoBehaviour
         //Set global values
         readyToCapture = false;
         count_update = 0;
-        count_captsend = 0;
         endSession = false;
         captureChangeRequest = false;
         sceneShotProcessed = true;
@@ -152,10 +150,10 @@ public class TCPCaptureChanges : MonoBehaviour
                         }
                         CaptureParameters = JsonUtility.FromJson<JSONCaptureParameters>(jsonparameters);
                         Debug.Log("message " + CaptureParameters.message);
-                        Debug.Log("ortho 0" + CaptureParameters.Object0.orthographic.ToString());
-                        Debug.Log("ortho 1" + CaptureParameters.Object1.orthographic.ToString());
-                        Debug.Log("ortho 2" + CaptureParameters.Object2.orthographic.ToString());
-                        Debug.Log("inteslight 1" + CaptureParameters.Object1.intensity.ToString());
+                        //Debug.Log("ortho 0" + CaptureParameters.Object0.orthographic.ToString());
+                        //Debug.Log("ortho 1" + CaptureParameters.Object1.orthographic.ToString());
+                        //Debug.Log("ortho 2" + CaptureParameters.Object2.orthographic.ToString());
+                        //Debug.Log("inteslight 1" + CaptureParameters.Object1.intensity.ToString());
                     }
                     break;
                 }

@@ -27,58 +27,28 @@ public class TCPGameObjectController : MonoBehaviour
         targetObject = this.gameObject;
         if (manager.captureChangeRequest == true) //future: also self set check
         {
-            SetJSONparamters();
+            SetJSONparameters();
         }
     }
 
 
 
     // Implementation of all parameter changes of objects
-    void SetJSONparamters()
+    void SetJSONparameters()
     {
-        switch(objectID)
+        if(this.objectID == -1)
         {
-            case -1:
-                Debug.Log("ObjectID not initialized");
-                break;
-            case 0:
-                Debug.Log("SetJSONparamters of Object 0");
-                manager.CaptureParameters.Object0.SetParameters(targetObject);
-                manager.objectParametersSet[0] = true;
-                break;
-            case 1:
-                Debug.Log("SetJSONparamters of Object 1");
-                manager.CaptureParameters.Object1.SetParameters(targetObject);
-                manager.objectParametersSet[1] = true;
-                break;
-            case 2:
-                Debug.Log("SetJSONparamters of Object 2");
-                manager.CaptureParameters.Object2.SetParameters(targetObject);
-                manager.objectParametersSet[2] = true;
-                break;
-            case 3:
-                Debug.Log("SetJSONparamters of Object 3");
-                manager.CaptureParameters.Object3.SetParameters(targetObject);
-                manager.objectParametersSet[3] = true;
-                break;
-            case 4:
-                Debug.Log("SetJSONparamters of Object 4");
-                manager.CaptureParameters.Object4.SetParameters(targetObject);
-                manager.objectParametersSet[4] = true;
-                break;
-            case 5:
-                Debug.Log("SetJSONparamters of Object 5");
-                manager.CaptureParameters.Object5.SetParameters(targetObject);
-                manager.objectParametersSet[5] = true;
-                break;
-            case 6:
-                Debug.Log("SetJSONparamters of Object 6");
-                manager.CaptureParameters.Object6.SetParameters(targetObject);
-                manager.objectParametersSet[6] = true; 
-                break;
-            default:
-                Debug.Log("unknown Object ID");
-                break;
+            Debug.Log("ObjectID not initialized");
+        }
+        else if (this.objectID < 0 || objectID >= manager.CaptureParameters.Objects.Length)
+        {
+            Debug.Log("ObjectID out of bounds of CaptureParameters.Objects[]");
+        }
+        else
+        {
+            Debug.Log("SetJSONparamters of Object " + this.objectID.ToString());
+            manager.CaptureParameters.Objects[objectID].SetParameters(targetObject, this.objectID);
+            manager.objectParametersSet[objectID] = true;
         }
     }
 

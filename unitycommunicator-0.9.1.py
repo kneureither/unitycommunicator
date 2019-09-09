@@ -16,6 +16,16 @@ class UnityCommunicator:
         self.logger.addHandler(self.fh)
         self.formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s : %(message)s')
         self.fh.setFormatter(self.formatter)
+
+        #Clear log at startup if it is longer than 1000 lines
+        with f as open('LOG/unity-communicator.log', 'r'):
+            loglength = len(f.readlines())
+
+        if loglength > 1000:
+            with open('LOG/unity-communicator.log', 'w'):
+                pass
+
+
         self.logger.info('executing unity response server...')
 
         self.socket_timeout = 0.1
@@ -162,27 +172,14 @@ class UnityCommunicator:
 if __name__ == '__main__':
 
     with UnityCommunicator() as uc:
-        jsondata = uc.readJsonFile('parameters_geometrics1.json')
+        jsondata = uc.readJsonFile('ParameterFiles/parameters_geometrics0_arraytest.json')
         img, sceneID = uc.renderParameters(jsondata)
-        Image.fromarray(img).save('FinalPictureID-' + str(sceneID) + '.png')
+        Image.fromarray(img).save('SavedScenes/FinalPictureID-' + str(sceneID) + '.png')
 
-        # jsondata = uc.readJsonFile('parameters_geometrics2.json')
-        # img, sceneID = uc.renderParameters(jsondata)
-        # Image.fromarray(img).save('FinalPictureID-' + str(sceneID) + '.png')
-        #
-        # jsondata = uc.readJsonFile('parameters_geometrics3yx.json')
-        # img, sceneID = uc.renderParameters(jsondata)
-        # Image.fromarray(img).save('FinalPictureID-' + str(sceneID) + '.png')
+        jsondata = uc.readJsonFile('ParameterFiles/parameters_geometrics1.json')
+        img, sceneID = uc.renderParameters(jsondata)
+        Image.fromarray(img).save('SavedScenes/FinalPictureID-' + str(sceneID) + '.png')
 
-
-
-    ## TODO: debugging code, to be deleted
-
-    print(img.shape)
-
-    imgPIL = Image.fromarray(img)
-    imgPIL.save('FinalPicture.png')
-
-
-
-# "intensity":18.12,
+        jsondata = uc.readJsonFile('ParameterFiles/parameters_geometrics2.json')
+        img, sceneID = uc.renderParameters(jsondata)
+        Image.fromarray(img).save('SavedScenes/FinalPictureID-' + str(sceneID) + '.png')
