@@ -63,7 +63,7 @@ class UnityCommunicator:
             self.streaming_assets_path = self.unity_build_path + '/Contents/Resources/Data/StreamingAssets/'
         else:
             ### For exection with unity engine
-            self.streaming_assets_path = self.unity_build_path + '/Assets/StreamingAssets'
+            self.streaming_assets_path = self.unity_build_path + '/Assets/StreamingAssets/'
 
         # Specify paths to tcpconfig.json file (in streamingAssets folder of unity project and of log file
         # self.streaming_assets_path = '/Users/KonstantinN/OneDrive/Dokumente/1_STUDIUM/_2019-SS/INFAP/Unity/TCPGeometrics/Assets/StreamingAssets/'
