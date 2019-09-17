@@ -4,82 +4,130 @@ import logging
 import numpy as np
 from PIL import Image
 import io
+import os
 
 
 class UnityCommunicator:
+    """provides all methods for communication to unity game enginge.
 
-    def __init__(self):
-        """Sets up logger, TCP connection and global variables.
-        Executed, when using the class in a with..as statement.
+    Scene paramters can be sent to unity, the corresponding scene can be sent back. Therefore a tcp connection is used.
+    The tcp paramters such as 'host' and 'port' are specified in tcpconfig.json file in the unity projects 'StreamingAssets'
+    folder.
+
+    See also
+    --------
+    Documentation 'unitycommunicator'
+    Created during software practical at Heidelberg Collaboratory of image processing. September 2019
+    https://hciweb.iwr.uni-heidelberg.de/compvis
+
+
+    Examples
+    --------
+    Render a scene parameter set (from json dictionary which can be passed directly or read from file).
+
+    >>> from unitycommunicator import UnityCommunicator
+
+    >>> with UnityCommunicator('unity_build.app') as uc:
+    >>>     json_data = uc.read_json_file('parameterfile.json')
+    >>>     scene_img, scene_id = uc.render_parameters(json_data)
+
+    To save image, use e.g. pillow
+
+    >>> from PIL import Image
+    >>> Image.fromarray(scene_img).save('Rendered_Scene_ID-{:3}.png'.format(str(scene_id).zfill(3)))
+    >>> # str.zfill ensures a consistent file naming (leading zeros)
+
+    """
+
+    def __init__(self, unity_build_path):
+        """Sets up everything to enable a tcp connection to unity.
+
+        Constructor of class, stars logging, stars unity build executable, starts tcp socket.
 
         Parameters
         ---------
-        none
+        unity_build_path : str
+            path to unity build executable
 
         """
+
+        # Start unity build
+        self.unity_build_path = unity_build_path
+        os.system('open ' + self.unity_build_path)
+
+        # Specify paths to tcpconfig.json file (in streamingAssets folder of unity project and of log file
+        # self.streaming_assets_path = '/Users/KonstantinN/OneDrive/Dokumente/1_STUDIUM/_2019-SS/INFAP/Unity/TCPGeometrics/Assets/StreamingAssets/'
+        self.streaming_assets_path = self.unity_build_path + '/Contents/Resources/Data/StreamingAssets/'
+        self.log_path = 'log/unity-communicator.log'
+        self.tcp_config_path = self.streaming_assets_path + 'tcpconfig.json'
 
 
         self.logger = logging.getLogger('unity-com')
         self.logger.setLevel(logging.DEBUG)
-        self.fh = logging.FileHandler('LOG/unity-communicator.log')
+        self.fh = logging.FileHandler(self.log_path)
         self.fh.setLevel(logging.DEBUG)
         self.logger.addHandler(self.fh)
-        self.formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s : %(message)s')
+        self.formatter = logging.Formatter('%(asctime)s - %(levelname)s : %(message)s')
         self.fh.setFormatter(self.formatter)
 
         #Clear log at startup if it is longer than 1000 lines
-        with open('LOG/unity-communicator.log', 'r') as f:
+        with open(self.log_path, 'r') as f:
             loglength = len(f.readlines())
 
         if loglength > 1000:
-            with open('LOG/unity-communicator.log', 'w'):
+            with open(self.log_path, 'w'):
                 pass
 
 
-        self.logger.info('executing unity response server...')
+        self.logger.info('start unity communication server...')
 
+        # Timeout for socket connection, will be used to prevent lock (in case both peers are receiving)
         self.socket_timeout = 0.1
-        self.path = '/Users/KonstantinN/OneDrive/Dokumente/1_STUDIUM/_2019-SS/INFAP/Unity/TCPGeometrics/Assets/StreamingAssets/'
 
+        # Call function for tcp server setup
         self.conn_unity = self._setup_server()
 
-        ## TODO: Vielleicht hier noch standard konfiguration als parameter0 schicken
 
     def __enter__(self):
-    """returns class if used in with statement.
+        """Necessary for usage in with...as statement.
 
-    Returns:
-    -------
-    self : UnityCommunicator
-           For use in "with UnityCommunicator() as:"
-    """
+        Returns
+        -------
+        self : UnityCommunicator
+           For use in "with UnityCommunicator(unity_build_path) as:"
+        """
+
         return self
 
-    def __exit__(self, type, value, traceback):#
-    """sends end request to Unity, closes TCP connection. Executed when used in with statement"""
-        self._sendData('END.')
-        self.logger.debug('end command sent')
+    def __exit__(self, type, value, traceback):
+        """sends end request to Unity, closes TCP connection. Called when used in with statement"""
+        self._send_data('END.')
+        self.logger.debug('End command was sent to Unity.')
         self.conn_unity.close()
 
     def _setup_server(self):
-    """Sets up TCP server. Therefore it looks for a free port in range (50000, 50099) and stores
-    the used port in File of Unity project at /StreamingAssets/tcpconfig.json. Unity reads the port and accepts the connection.
+        """Sets up TCP server for unity connection.
 
-    Returns:
-    --------
-    socket.socket
-                 the socket connection to unity
+        Therefore it looks for a free port in range (50000, 50099) and stores
+        the used port in tcpconfig.json file of Unity project at /StreamingAssets/tcpconfig.json.
+        Unity reads the port and accepts the connection.
 
-    Raises:
-    --------
-    FileNotFoundError
-            tcpconfig.json in StreamingAssets Folder of UnityProject can not be found
-    socket.error
-            to catch if socket is in use
-    """
+        Returns
+        --------
+        socket.socket
+                the socket connection to unity
 
+        Raises
+        ------
+        FileNotFoundError
+                tcpconfig.json in StreamingAssets Folder of UnityProject can not be found
+        socket.error
+                to catch if socket is in use
+        """
+
+        # Open tcpconfig.json file
         try:
-            with open(self.path + 'tcpconfig.json', 'r') as f:
+            with open(self.tcp_config_path, 'r') as f:
                 config = json.load(f)
                 f.close()
         except FileNotFoundError as e:
@@ -87,13 +135,14 @@ class UnityCommunicator:
             print('ERROR: tcpconfig.json no such file, should be found in <UnityProject>/Assets/StreamingAssets/')
             raise e
 
-        self.logger.info("CONFIG : " + str(config['ports'][1]) + " at " + str(config['host']))
 
+        # try to bind port specified in tcpconfig.json file
         while 1:
             try:
                 socket_unity = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 socket_unity.bind((config['host'], config['ports'][1]))
             except socket.error as e:
+                # If port is in use, try next port
                 print(e)
                 print('STATUS : try next port...')
 
@@ -101,20 +150,20 @@ class UnityCommunicator:
                     config['ports'][1] = 50000
                 else:
                     config['ports'][1] += 1
-
-                socket_unity.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-
-                with open(self.path + 'tcpconfig.json', 'w') as f:
-                    json.dump(config, f)
-                    f.close()
             else:
                 break
+
+        # Write used port to 'tcpconfig.json'
+        with open(self.tcp_config_path, 'w') as f:
+            json.dump(config, f)
+            f.close()
 
         socket_unity = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         socket_unity.bind((config['host'], config['ports'][1]))
 
         socket_unity.listen(1)
         print('STATUS : waiting for connection from Unity at port {} ...'.format(config['ports'][1]))
+        print('STATUS : Please start Unity...')
         conn_unity, addr_unity = socket_unity.accept()
         print('STATUS : connection to Unity established at addr: ', str(addr_unity))
 
@@ -122,96 +171,168 @@ class UnityCommunicator:
 
         return conn_unity
 
-    def _sendData(self, message):
-        """sends data to socket and adds end tag. End tag is then interpreted as end of message by unity"""
-        self.logger.debug('_sendData(): entered')
+
+    def _send_data(self, message):
+        """sends string to socket. 
+        
+        At the end of each message, an end tag 'eod.' is added to the message.
+        Unity detects the end of the message by reading this tag.
+        
+        Parameters
+        ---------
+        message : str
+            server message to unity. should be in json format.
+        
+        """
+        
+        self.logger.debug('_send_data(): entered')
         self.conn_unity.sendall((message + 'eod.').encode())  # End of Data
-        self.logger.debug('_sendData(): sendall succeeded')
+        self.logger.debug('_send_data(): sendall succeeded')
 
 
-    def _receiveDataAsBytes(self):
-        """receives data at the classes socket. ends by timeout, returns string object"""
+    def _receive_data_as_bytes(self):
+        """receives data at the classes socket.
+        
+        _receive_data_as_bytes is either ended by timeout or if not data is sent.
+
+        Returns
+        -------
+        data_complete : bytearray
+            bytearray of message packages
+        """
+
+        self.logger.debug('_receive_data_as_bytes(): entered')
         data_complete = bytearray([0])
-        self.logger.debug('_receiveDataAsBytes(): entered')
 
         while 1:
             try:
                 data = self.conn_unity.recv(1024)
             except socket.timeout:
-                self.logger.error('_receiveDataAsBytes(): timeout -> exit _receiveData()')
+                self.logger.error('_receive_data_as_bytes(): timeout -> exit _receiveData()')
                 break
 
             data_complete = data_complete + data
             if not data:
-                self.logger.debug('_receiveDataAsBytes(): no data anymore. receive ends.')
+                self.logger.debug('_receive_data_as_bytes(): no data anymore. receive ends.')
                 break
 
         return data_complete
 
 
-    def readJsonFile(self, filename):
-        """loads json file as python directory"""
-        jsonstring = open(filename).read()
-        jsondata = json.loads(jsonstring)
+    def read_json_file(self, file_name):
+        """loads json file as python directory.
 
-        return jsondata
+        Parameters
+        ---------
+        filename : str
+            path to paramter file
 
-    def renderParameters(self, json_dict):
-        """delivers given parameters as json string to unity and returns ID, status and np.array RGBA (height, width, 4)"""
-        print("Entered renderParameterDict...")
+        Returns
+        -------
+        dictionary
+            contains json file parameters. Returns None if invalid file or parsing to dict impossible.
+        """
 
-        self.logger.debug('entered renderParameterDict()')
+        try:
+            json_string = open(file_name).read()
+        except FileNotFoundError as e:
+            self.logger.error(file_name + 'can not be found. returned None')
+            print('ERROR: ' + file_name + 'can not be found. returned None')
+            #Return none, in order to skip this parameter file. (None check is implemented in render_paramters())
+            return None
 
-        json_string = json.dumps(json_dict, separators = (',', ':'))
+        try:
+            json_dict = json.loads(json_string)
+        except json.decoder.JSONDecodeError as e:
+            self.logger.error(file_name + 'can not be converted to json. Returned None')
+            print('ERROR: ' + file_name + 'can not be converted to json. Returned None')
+            # Return none, in order to skip this parameter file. (None check is implemented in render_paramters())
+            return None
 
-        self.logger.info('start sending data...')
-        self._sendData(json_string)
-        self.logger.info('success: data sent.')
+        return json_dict
 
+    def render_parameters(self, param_dict):
+        """controls the rendering of one scene parameter set in unity.
+
+        Therefore it delivers given parameters as json string to unity and returns the scene meta data as well as a
+        rendered scene picture. The json_dict should contain paramters for every scene object in unity. Also the class
+        'JSONCaptureParameters' in Assets/Scripts/ in unity should contain a representation for the delivered dict.
+
+        Parameters
+        ---------
+        param_dict : dictionary
+            should contain all parameters of scene objects in unity.
+
+        Returns
+        -------
+        np.array
+            contains captured scene as RGBA array of dimensions (height, width, 4)
+        int
+            the sceneID specified in the deliverd param_dict for the scene
+
+        See also
+        --------
+        Documentation unitycommunicator.
+
+        """
+
+        print("Entered render_parameters...")
+        self.logger.debug('render_parameters(): Entered')
+
+        if param_dict is None:
+            print('render_parameters(): Invalid json_dict. Abort and return None')
+            self.logger.error('render_parameters(): Aborted because of invalid json_dict')
+            return None
+
+        json_string = json.dumps(param_dict, separators=(',', ':'))
+
+        self.logger.info('render_parameters(): Start sending data...')
+        self._send_data(message=json_string)
+        self.logger.info('render_parameters(): Success: data sent.')
+
+        # Run the _receive_data_as_bytes() until valid response (bytearray end tag).
+        # This uses the socket timeout break in _receive_data_as_bytes() to wait for the rendering to finish.
+        # This is necessary to avoid a lock, which occurs when python starts to receive before unity sends.
         while 1:
-            unity_resp_bytes = self._receiveDataAsBytes()
+            unity_resp_bytes = self._receive_data_as_bytes()
 
             if unity_resp_bytes[-8:] == bytearray([255,0,250,251,252,253,254,255]):
-                self.logger.debug('_renderParameters(): end tag from Unity detected, end receive')
+                self.logger.debug('render_parameters(): End tag from Unity detected, end receive')
                 break
 
-            self.logger.debug('run again _receiveData(): data so far ' + str(unity_resp_bytes))
+            self.logger.debug('render_parameters(): Run again receive_data()')
 
+        self.logger.debug('render_parameters(): Received scene of ' + str(len(unity_resp_bytes)) + ' bytes')
 
-        self.logger.debug('received scene of ' + str(len(unity_resp_bytes)) + ' bytes')
+        # Load the meta data file in dictionary and process the scene_img
+        meta_length = int.from_bytes(unity_resp_bytes[-12:-8], byteorder='little')
+        meta_bytes = unity_resp_bytes[-(12 + meta_length):-12].decode()
+        meta_data_dict = json.loads(meta_bytes)
+        scene_id = meta_data_dict['sceneID']
+        message = meta_data_dict['message']
+        img_bytes = unity_resp_bytes[1:-(12+meta_length)]
 
-        metaLength = int.from_bytes(unity_resp_bytes[-12:-8], byteorder='little')
-        metaBytes = unity_resp_bytes[-(12 + metaLength):-12].decode()
-        metaData = json.loads(metaBytes)
-        sceneID = metaData['sceneID']
-        message = metaData['message']
-        img_bytes = unity_resp_bytes[1:-(12+metaLength)]
+        self.logger.info('render_parameters(): Unpacked scene with ID ' + str(scene_id))
 
-        self.logger.info('unpacked scene with ID ' + str(sceneID))
+        print('Scene meta data message: ' + message)
+        pillow_img = Image.open(io.BytesIO(img_bytes))
+        scene_img = np.array(pillow_img)
 
-        print(message)
-        pilImg = Image.open(io.BytesIO(img_bytes))
-        img = np.array(pilImg)
+        print("response status from Unity: ID " + str(scene_id) + " received")
 
-        print("response status from Unity: ID " + str(sceneID) + " received")
-
-        return img, sceneID
-
-        def renderParameterFile(self, json_file):
-            jsondata = self.readJsonFile(jsonfile)
-            return renderParameters(self, jsondata)
+        return scene_img, scene_id
 
 
 if __name__ == '__main__':
-    with UnityCommunicator() as uc:
-        jsondata = uc.readJsonFile('ParameterFiles/parameters_geometrics0.json')
-        img, sceneID = uc.renderParameters(jsondata)
-        Image.fromarray(img).save('SavedScenes/FinalPictureID-' + str(sceneID) + '.png')
+    with UnityCommunicator('TCPGeometricsBuild.app') as uc:
+        json_data = uc.read_json_file('ParameterFiles/parameters_geometrics0.json')
+        scene_img, scene_id = uc.render_parameters(json_data)
+        Image.fromarray(scene_img).save('SavedScenes/Rendered_Scene_ID-{:3}.png'.format(str(scene_id).zfill(3)))
 
-        jsondata = uc.readJsonFile('ParameterFiles/parameters_geometrics1.json')
-        img, sceneID = uc.renderParameters(jsondata)
-        Image.fromarray(img).save('SavedScenes/FinalPictureID-' + str(sceneID) + '.png')
+        json_data = uc.read_json_file('ParameterFiles/parameters_geometrics1.json')
+        scene_img, scene_id = uc.render_parameters(json_data)
+        Image.fromarray(scene_img).save('SavedScenes/Rendered_Scene_ID-{:3}.png'.format(str(scene_id).zfill(3)))
 
-        jsondata = uc.readJsonFile('ParameterFiles/parameters_geometrics2.json')
-        img, sceneID = uc.renderParameters(jsondata)
-        Image.fromarray(img).save('SavedScenes/FinalPictureID-' + str(sceneID) + '.png')
+        json_data = uc.read_json_file('ParameterFiles/parameters_geometrics2.json')
+        scene_img, scene_id = uc.render_parameters(json_data)
+        Image.fromarray(scene_img).save('SavedScenes/Rendered_Scene_ID-{:3}.png'.format(str(scene_id).zfill(3)))
