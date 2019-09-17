@@ -27,7 +27,7 @@ class UnityCommunicator:
 
     >>> from unitycommunicator import UnityCommunicator
 
-    >>> with UnityCommunicator('unity_build.app') as uc:
+    >>> with UnityCommunicator('unity_build.app', use_with_unity_build=True) as uc:
     >>>     json_data = uc.read_json_file('parameterfile.json')
     >>>     scene_img, scene_id = uc.render_parameters(json_data)
 
@@ -39,7 +39,7 @@ class UnityCommunicator:
 
     """
 
-    def __init__(self, unity_build_path):
+    def __init__(self, unity_build_path, use_with_unity_build):
         """Sets up everything to enable a tcp connection to unity.
 
         Constructor of class, stars logging, stars unity build executable, starts tcp socket.
@@ -49,15 +49,26 @@ class UnityCommunicator:
         unity_build_path : str
             path to unity build executable
 
+        use_with_unity_build : bool
+            if used with unity engine True, if used with unity build False
+            Changes some path specifications and also starts the build if True
+
         """
 
-        # Start unity build
         self.unity_build_path = unity_build_path
-        os.system('open ' + self.unity_build_path)
+
+        if use_with_unity_build == True:
+            ### For execution with BUILD
+            # Start unity build
+            os.system('open ' + self.unity_build_path)
+            self.streaming_assets_path = self.unity_build_path + '/Contents/Resources/Data/StreamingAssets/'
+        else:
+            ### For execution with unity engine
+            self.streaming_assets_path = self.unity_build_path + '/Assets/StreamingAssets/'
+            print('Please start Unity...')
 
         # Specify paths to tcpconfig.json file (in streamingAssets folder of unity project and of log file
         # self.streaming_assets_path = '/Users/KonstantinN/OneDrive/Dokumente/1_STUDIUM/_2019-SS/INFAP/Unity/TCPGeometrics/Assets/StreamingAssets/'
-        self.streaming_assets_path = self.unity_build_path + '/Contents/Resources/Data/StreamingAssets/'
         self.log_path = 'log/unity-communicator.log'
         self.tcp_config_path = self.streaming_assets_path + 'tcpconfig.json'
 
@@ -158,12 +169,12 @@ class UnityCommunicator:
             json.dump(config, f)
             f.close()
 
+
         socket_unity = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         socket_unity.bind((config['host'], config['ports'][1]))
 
         socket_unity.listen(1)
         print('STATUS : waiting for connection from Unity at port {} ...'.format(config['ports'][1]))
-        print('STATUS : Please start Unity...')
         conn_unity, addr_unity = socket_unity.accept()
         print('STATUS : connection to Unity established at addr: ', str(addr_unity))
 
@@ -274,6 +285,10 @@ class UnityCommunicator:
         --------
         Documentation unitycommunicator.
 
+        Examples
+        --------
+        See UnityCommunicator().__doc__
+
         """
 
         print("Entered render_parameters...")
@@ -324,7 +339,7 @@ class UnityCommunicator:
 
 
 if __name__ == '__main__':
-    with UnityCommunicator('TCPGeometricsBuild.app') as uc:
+    with UnityCommunicator('/Users/KonstantinN/OneDrive/Dokumente/1_STUDIUM/_2019-SS/INFAP/Unity/TCPGeometrics', use_with_unity_build=False) as uc:
         json_data = uc.read_json_file('ParameterFiles/parameters_geometrics0.json')
         scene_img, scene_id = uc.render_parameters(json_data)
         Image.fromarray(scene_img).save('SavedScenes/Rendered_Scene_ID-{:3}.png'.format(str(scene_id).zfill(3)))
