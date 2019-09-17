@@ -3,6 +3,9 @@
 LOG/**
 DEBUGGING/**
 
+# PyCharm
+.idea
+
 # bash tools
 
 syncunity.txt
