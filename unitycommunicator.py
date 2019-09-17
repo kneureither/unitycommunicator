@@ -65,6 +65,7 @@ class UnityCommunicator:
         else:
             ### For execution with unity engine
             self.streaming_assets_path = self.unity_build_path + '/Assets/StreamingAssets/'
+            print('Please start Unity...')
 
         # Specify paths to tcpconfig.json file (in streamingAssets folder of unity project and of log file
         # self.streaming_assets_path = '/Users/KonstantinN/OneDrive/Dokumente/1_STUDIUM/_2019-SS/INFAP/Unity/TCPGeometrics/Assets/StreamingAssets/'
@@ -174,7 +175,6 @@ class UnityCommunicator:
 
         socket_unity.listen(1)
         print('STATUS : waiting for connection from Unity at port {} ...'.format(config['ports'][1]))
-        print('STATUS : Please start Unity...')
         conn_unity, addr_unity = socket_unity.accept()
         print('STATUS : connection to Unity established at addr: ', str(addr_unity))
 
