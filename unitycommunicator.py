@@ -27,7 +27,7 @@ class UnityCommunicator:
 
     >>> from unitycommunicator import UnityCommunicator
 
-    >>> with UnityCommunicator('unity_build.app') as uc:
+    >>> with UnityCommunicator('unity_build.app', use_with_unity_build=True) as uc:
     >>>     json_data = uc.read_json_file('parameterfile.json')
     >>>     scene_img, scene_id = uc.render_parameters(json_data)
 
@@ -50,7 +50,8 @@ class UnityCommunicator:
             path to unity build executable
 
         use_with_unity_build : bool
-            if use with unity engine True, if used with unity build False
+            if used with unity engine True, if used with unity build False
+            Changes some path specifications and also starts the build if True
 
         """
 
