@@ -63,7 +63,7 @@ class UnityCommunicator:
             os.system('open ' + self.unity_build_path)
             self.streaming_assets_path = self.unity_build_path + '/Contents/Resources/Data/StreamingAssets/'
         else:
-            ### For exection with unity engine
+            ### For execution with unity engine
             self.streaming_assets_path = self.unity_build_path + '/Assets/StreamingAssets/'
 
         # Specify paths to tcpconfig.json file (in streamingAssets folder of unity project and of log file
@@ -167,6 +167,7 @@ class UnityCommunicator:
         with open(self.tcp_config_path, 'w') as f:
             json.dump(config, f)
             f.close()
+
 
         socket_unity = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         socket_unity.bind((config['host'], config['ports'][1]))
@@ -338,7 +339,7 @@ class UnityCommunicator:
 
 
 if __name__ == '__main__':
-    with UnityCommunicator('/Users/KonstantinN/OneDrive/Dokumente/1_STUDIUM/_2019-SS/INFAP/DEV/unitycommunicator/TCPGeometrics', use_with_unity_build=False) as uc:
+    with UnityCommunicator('/Users/KonstantinN/OneDrive/Dokumente/1_STUDIUM/_2019-SS/INFAP/Unity/TCPGeometrics', use_with_unity_build=False) as uc:
         json_data = uc.read_json_file('ParameterFiles/parameters_geometrics0.json')
         scene_img, scene_id = uc.render_parameters(json_data)
         Image.fromarray(scene_img).save('SavedScenes/Rendered_Scene_ID-{:3}.png'.format(str(scene_id).zfill(3)))
