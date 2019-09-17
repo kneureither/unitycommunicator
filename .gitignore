@@ -5,6 +5,7 @@ DEBUGGING/**
 
 # PyCharm
 .idea
+__pycache__
 
 # bash tools
 
