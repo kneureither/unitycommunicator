@@ -10,8 +10,8 @@ import os
 class UnityCommunicator:
     """provides all methods for communication to unity game enginge.
 
-    Scene paramters can be sent to unity, the corresponding scene can be sent back. Therefore a tcp connection is used.
-    The tcp paramters such as 'host' and 'port' are specified in tcpconfig.json file in the unity projects 'StreamingAssets'
+    Scene parameters can be sent to unity, the corresponding scene can be sent back. Therefore a tcp connection is used.
+    The tcp parameters such as 'host' and 'port' are specified in tcpconfig.json file in the unity projects 'StreamingAssets'
     folder.
 
     See also
@@ -55,42 +55,53 @@ class UnityCommunicator:
 
         """
 
+        self.log_path = 'log/unity-communicator.log'
+
+        # Create logger
+        self.logger = logging.getLogger('UClog')
+        self.logger.setLevel(logging.DEBUG)
+        # Create console handler
+        self.ch = logging.StreamHandler()
+        self.ch.setLevel(logging.INFO)
+        # Create file handler
+        self.fh = logging.FileHandler(self.log_path)
+        self.fh.setLevel(logging.DEBUG)
+        # Add formatter
+        self.formatter_fh = logging.Formatter('%(asctime)s - %(levelname)s : %(message)s')
+        self.fh.setFormatter(self.formatter_fh)
+        self.formatter_ch = logging.Formatter('%(levelname)s : %(message)s')
+        self.ch.setFormatter(self.formatter_ch)
+        # Add fh and ch to logger
+        self.logger.addHandler(self.fh)
+        self.logger.addHandler(self.ch)
+
+        #Clear log at startup if it is longer than 1000 lines
+        with open(self.log_path, 'r') as f:
+            log_length = len(f.readlines())
+
+        if log_length > 1000:
+            with open(self.log_path, 'w'):
+                pass
+
+        print('')
+        self.logger.info('starting unity communication server...\n')
+
+
         self.unity_build_path = unity_build_path
 
         if use_with_unity_build == True:
-            ### For execution with BUILD
+            # For execution with BUILD
             # Start unity build
             os.system('open ' + self.unity_build_path)
             self.streaming_assets_path = self.unity_build_path + '/Contents/Resources/Data/StreamingAssets/'
         else:
-            ### For execution with unity engine
+            # For execution with unity engine
             self.streaming_assets_path = self.unity_build_path + '/Assets/StreamingAssets/'
-            print('Please start Unity...')
+            self.logger.warning('Please start Unity...')
 
-        # Specify paths to tcpconfig.json file (in streamingAssets folder of unity project and of log file
+        # Specify paths to tcpconfig.json file (in streamingAssets folder of unity project
         # self.streaming_assets_path = '/Users/KonstantinN/OneDrive/Dokumente/1_STUDIUM/_2019-SS/INFAP/Unity/TCPGeometrics/Assets/StreamingAssets/'
-        self.log_path = 'log/unity-communicator.log'
         self.tcp_config_path = self.streaming_assets_path + 'tcpconfig.json'
-
-
-        self.logger = logging.getLogger('unity-com')
-        self.logger.setLevel(logging.DEBUG)
-        self.fh = logging.FileHandler(self.log_path)
-        self.fh.setLevel(logging.DEBUG)
-        self.logger.addHandler(self.fh)
-        self.formatter = logging.Formatter('%(asctime)s - %(levelname)s : %(message)s')
-        self.fh.setFormatter(self.formatter)
-
-        #Clear log at startup if it is longer than 1000 lines
-        with open(self.log_path, 'r') as f:
-            loglength = len(f.readlines())
-
-        if loglength > 1000:
-            with open(self.log_path, 'w'):
-                pass
-
-
-        self.logger.info('start unity communication server...')
 
         # Timeout for socket connection, will be used to prevent lock (in case both peers are receiving)
         self.socket_timeout = 0.1
@@ -112,9 +123,11 @@ class UnityCommunicator:
 
     def __exit__(self, type, value, traceback):
         """sends end request to Unity, closes TCP connection. Called when used in with statement"""
+
         self._send_data('END.')
-        self.logger.debug('End command was sent to Unity.')
+        self.logger.warning('End command was sent to Unity.')
         self.conn_unity.close()
+        self.logger.warning('Socket closed. exit...')
 
     def _setup_server(self):
         """Sets up TCP server for unity connection.
@@ -142,8 +155,7 @@ class UnityCommunicator:
                 config = json.load(f)
                 f.close()
         except FileNotFoundError as e:
-            self.logger.error('tcpconfig.json can not be found')
-            print('ERROR: tcpconfig.json no such file, should be found in <UnityProject>/Assets/StreamingAssets/')
+            self.logger.error('\'tcpconfig.json\' no such file, should be found in <UnityProject>/Assets/StreamingAssets/')
             raise e
 
 
@@ -155,7 +167,7 @@ class UnityCommunicator:
             except socket.error as e:
                 # If port is in use, try next port
                 print(e)
-                print('STATUS : try next port...')
+                self.logger.warning('try next port...')
 
                 if (config['ports'][1]) >= 50100:
                     config['ports'][1] = 50000
@@ -174,9 +186,9 @@ class UnityCommunicator:
         socket_unity.bind((config['host'], config['ports'][1]))
 
         socket_unity.listen(1)
-        print('STATUS : waiting for connection from Unity at port {} ...'.format(config['ports'][1]))
+        self.logger.warning('waiting for connection from Unity at port {} ...'.format(config['ports'][1]))
         conn_unity, addr_unity = socket_unity.accept()
-        print('STATUS : connection to Unity established at addr: ', str(addr_unity))
+        self.logger.warning('connection to Unity established at addr: ' + str(addr_unity) + '\n')
 
         conn_unity.settimeout(self.socket_timeout)
 
@@ -219,7 +231,7 @@ class UnityCommunicator:
             try:
                 data = self.conn_unity.recv(1024)
             except socket.timeout:
-                self.logger.error('_receive_data_as_bytes(): timeout -> exit _receiveData()')
+                self.logger.debug('_receive_data_as_bytes(): timeout -> exit _receiveData()')
                 break
 
             data_complete = data_complete + data
@@ -236,7 +248,7 @@ class UnityCommunicator:
         Parameters
         ---------
         filename : str
-            path to paramter file
+            path to parameter file
 
         Returns
         -------
@@ -247,17 +259,15 @@ class UnityCommunicator:
         try:
             json_string = open(file_name).read()
         except FileNotFoundError as e:
-            self.logger.error(file_name + 'can not be found. returned None')
-            print('ERROR: ' + file_name + 'can not be found. returned None')
-            #Return none, in order to skip this parameter file. (None check is implemented in render_paramters())
+            self.logger.error(file_name + ' can not be found. returned None')
+            #Return none, in order to skip this parameter file. (None check is implemented in render_parameters())
             return None
 
         try:
             json_dict = json.loads(json_string)
         except json.decoder.JSONDecodeError as e:
-            self.logger.error(file_name + 'can not be converted to json. Returned None')
-            print('ERROR: ' + file_name + 'can not be converted to json. Returned None')
-            # Return none, in order to skip this parameter file. (None check is implemented in render_paramters())
+            self.logger.error(file_name + ' can not be converted to json. Returned None')
+            # Return none, in order to skip this parameter file. (None check is implemented in render_parameters())
             return None
 
         return json_dict
@@ -266,7 +276,7 @@ class UnityCommunicator:
         """controls the rendering of one scene parameter set in unity.
 
         Therefore it delivers given parameters as json string to unity and returns the scene meta data as well as a
-        rendered scene picture. The json_dict should contain paramters for every scene object in unity. Also the class
+        rendered scene picture. The json_dict should contain parameters for every scene object in unity. Also the class
         'JSONCaptureParameters' in Assets/Scripts/ in unity should contain a representation for the delivered dict.
 
         Parameters
@@ -291,19 +301,17 @@ class UnityCommunicator:
 
         """
 
-        print("Entered render_parameters...")
-        self.logger.debug('render_parameters(): Entered')
+        self.logger.info('Render parameters of scene with ID ' + str(param_dict['sceneID']) + ' ...')
 
         if param_dict is None:
-            print('render_parameters(): Invalid json_dict. Abort and return None')
             self.logger.error('render_parameters(): Aborted because of invalid json_dict')
             return None
 
         json_string = json.dumps(param_dict, separators=(',', ':'))
 
-        self.logger.info('render_parameters(): Start sending data...')
+        self.logger.debug('render_parameters(): Start sending data...')
         self._send_data(message=json_string)
-        self.logger.info('render_parameters(): Success: data sent.')
+        self.logger.debug('render_parameters(): Success! Data sent.')
 
         # Run the _receive_data_as_bytes() until valid response (bytearray end tag).
         # This uses the socket timeout break in _receive_data_as_bytes() to wait for the rendering to finish.
@@ -327,13 +335,11 @@ class UnityCommunicator:
         message = meta_data_dict['message']
         img_bytes = unity_resp_bytes[1:-(12+meta_length)]
 
-        self.logger.info('render_parameters(): Unpacked scene with ID ' + str(scene_id))
+        self.logger.info('Received and unpacked scene with ID ' + str(scene_id))
+        self.logger.info('Scene meta data message: ' + message + '\n')
 
-        print('Scene meta data message: ' + message)
         pillow_img = Image.open(io.BytesIO(img_bytes))
         scene_img = np.array(pillow_img)
-
-        print("response status from Unity: ID " + str(scene_id) + " received")
 
         return scene_img, scene_id
 
