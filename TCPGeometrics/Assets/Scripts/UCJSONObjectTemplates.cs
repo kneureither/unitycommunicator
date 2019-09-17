@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TCPExtensionMethods
+public class UCJSONObjectTemplates
 {
 }
 
-//Json Object Templates *****************************************************************
+#region UNITY COM: JSON object templates
 
 [System.Serializable]
 public class TcpConfigParameters
@@ -15,8 +15,9 @@ public class TcpConfigParameters
     public int[] ports;
 }
 
-[System.Serializable]
+
 //JSON representation for Serializing of received parameters
+[System.Serializable]
 public class JSONCaptureParameters
 {
     public string message;
@@ -26,9 +27,10 @@ public class JSONCaptureParameters
 
 }
 
-[System.Serializable]
+
 // representation of Generic GameObject (Camera, Light, 3Dobject)
 // void SetParamters(targetObject, objectID) sets parameters of targetObject
+[System.Serializable]
 public class JSONCaptureGenericObject
 {
     //When performing changes in member region, also SetParamters() must be updated
@@ -62,7 +64,7 @@ public class JSONCaptureGenericObject
 
 
     public void SetParameters(GameObject targetObject, int objectID)
-    //Method to set all class paramters of the Gameobject
+    //Method to set all class paramters of the Gameobject to the targetObject
     {
         Renderer rend = targetObject.GetComponent<Renderer>();
         Light light = targetObject.GetComponent<Light>();
@@ -81,7 +83,8 @@ public class JSONCaptureGenericObject
         }
         catch (System.NullReferenceException NullException)
         {
-            Debug.Log("ERROR : " + NullException + "\nPlease check info, pos, rot, scale paramters in json dict for objectID " + objectID.ToString());
+            Debug.Log("ERROR : Please check info, pos, rot, scale paramters in json dict for objectID " + objectID.ToString()
+                + "\n" + NullException);
         }
 
         Debug.Log("Position set to " + targetObject.transform.position.ToString() +
@@ -102,7 +105,8 @@ public class JSONCaptureGenericObject
             }
             catch (System.NullReferenceException NullException)
             {
-                Debug.Log("ERROR : " + NullException + "\nPlease check 3DGameObject paramters in json dict for objectID " + objectID.ToString());
+                Debug.Log("ERROR : Please check 3DGameObject paramters in json dict for objectID "+ objectID.ToString()
+                    + "\n" + NullException);
             }
             
         }
@@ -132,8 +136,10 @@ public class JSONCaptureGenericObject
             }
             catch (System.NullReferenceException NullException)
             {
-                Debug.Log("ERROR : " + NullException + "\nPlease check light paramters in json dict for objectID " + objectID.ToString());
+                Debug.Log("ERROR : Please check light paramters in json dict for objectID " + objectID.ToString()
+                    + "\n" + NullException);
             }
+            
 
 
         }
@@ -156,7 +162,8 @@ public class JSONCaptureGenericObject
             }
             catch (System.NullReferenceException NullException)
             {
-                Debug.Log("ERROR : " + NullException + "\nPlease check camera paramters in json dict for objectID " + objectID.ToString());
+                Debug.Log("ERROR : Please check camera paramters in json dict for objectID " + objectID.ToString()
+                    + "\n" + NullException);
             }
 
         }
@@ -185,4 +192,4 @@ public class JSONPNGmetadata
     }
 }
 
-
+#endregion

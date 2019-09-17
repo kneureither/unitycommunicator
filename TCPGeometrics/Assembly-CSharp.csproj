@@ -62,10 +62,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Scripts\TCPCaptureChanges.cs" />
-    <Compile Include="Assets\Scripts\TCPExtensionMethods.cs" />
-    <Compile Include="Assets\Scripts\TCPGameObjectController.cs" />
-    <Compile Include="Assets\Scripts\TCPoldCode.cs" />
+    <Compile Include="Assets\Scripts\UCGameObjectController.cs" />
+    <Compile Include="Assets\Scripts\UCJSONObjectTemplates.cs" />
+    <Compile Include="Assets\Scripts\UCManageCapture.cs" />
+    <Compile Include="Assets\Scripts\UnityCommunicatorClient.cs" />
     <Reference Include="Unity.Timeline.Editor">
       <HintPath>/Users/KonstantinN/OneDrive/Dokumente/1_STUDIUM/_2019-SS/INFAP/Unity/TCPGeometrics/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
     </Reference>
