@@ -1,0 +1,15 @@
+#!/bin/bash
+
+echo "INFO  : Syncing unity scripts from git to unity project..."
+read -p "Are you sure?"  yn
+echo $yn
+if [ $yn == "yes" ]
+then
+
+	echo "STATUS : Saving Asbests Folder..."
+	cp -R /Users/KonstantinN/OneDrive/Dokumente/1_STUDIUM/_2019-SS/INFAP/Unity/TCPGeometrics/Assets/Scripts /Users/KonstantinN/OneDrive/Dokumente/1_STUDIUM/_2019-SS/INFAP/scriptingBackup
+	cp -R /Users/KonstantinN/OneDrive/Dokumente/1_STUDIUM/_2019-SS/INFAP/DEV/unitycommunicator/TCPGeometrics/Assets/Scripts /Users/KonstantinN/OneDrive/Dokumente/1_STUDIUM/_2019-SS/INFAP/Unity/TCPGeometrics/Assets
+
+	echo "STATUS : Scripts Folder synced reversed to git status"
+	echo "STATUS : Sync completed"
+fi

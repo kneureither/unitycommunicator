@@ -1,0 +1,22 @@
+#!/bin/bash
+
+echo "INFO  : Syncing unity scripts from TCPGeometrics to git archive..."
+
+
+cp -R /Users/KonstantinN/OneDrive/Dokumente/1_STUDIUM/_2019-SS/INFAP/Unity/TCPGeometrics/Assets/Materials /Users/KonstantinN/OneDrive/Dokumente/1_STUDIUM/_2019-SS/INFAP/Unity/TCPGeometrics/Assets/Scenes /Users/KonstantinN/OneDrive/Dokumente/1_STUDIUM/_2019-SS/INFAP/Unity/TCPGeometrics/Assets/Scripts /Users/KonstantinN/OneDrive/Dokumente/1_STUDIUM/_2019-SS/INFAP/Unity/TCPGeometrics/Assets/StreamingAssets /Users/KonstantinN/OneDrive/Dokumente/1_STUDIUM/_2019-SS/INFAP/DEV/unitycommunicator/TCPGeometrics/Assets
+
+echo "STATUS : Assets Folder synced"
+
+cp -R /Users/KonstantinN/OneDrive/Dokumente/1_STUDIUM/_2019-SS/INFAP/Unity/TCPGeometrics/Packages /Users/KonstantinN/OneDrive/Dokumente/1_STUDIUM/_2019-SS/INFAP/DEV/unitycommunicator/TCPGeometrics/Packages
+
+echo "STATUS : Package Folder synced"
+
+cp -R /Users/KonstantinN/OneDrive/Dokumente/1_STUDIUM/_2019-SS/INFAP/Unity/TCPGeometrics/Packages /Users/KonstantinN/OneDrive/Dokumente/1_STUDIUM/_2019-SS/INFAP/DEV/unitycommunicator/TCPGeometrics/ProjectSettings 
+
+echo "STATUS : Project Settings Folder synced"
+
+cp -R /Users/KonstantinN/OneDrive/Dokumente/1_STUDIUM/_2019-SS/INFAP/Unity/TCPGeometrics/Assembly-CSharp.csproj /Users/KonstantinN/OneDrive/Dokumente/1_STUDIUM/_2019-SS/INFAP/Unity/TCPGeometrics/TCPGeometrics.sln /Users/KonstantinN/OneDrive/Dokumente/1_STUDIUM/_2019-SS/INFAP/DEV/unitycommunicator/TCPGeometrics
+
+echo "STATUS : Visual Studio Components synced"
+
+echo "STATUS : Sync completed"
