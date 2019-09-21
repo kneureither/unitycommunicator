@@ -15,6 +15,13 @@ public class TcpConfigParameters
     public int[] ports;
 }
 
+[System.Serializable]
+public class UnityInitResolution
+{
+    public int width;
+    public int height;
+}
+
 
 //JSON representation for Serializing of received parameters
 [System.Serializable]
@@ -83,7 +90,7 @@ public class JSONCaptureGenericObject
         }
         catch (System.NullReferenceException NullException)
         {
-            Debug.Log("ERROR : Please check info, pos, rot, scale paramters in json dict for objectID " + objectID.ToString()
+            Debug.Log("ERROR : Please check info, pos, rot, scale parameters in json dict for objectID " + objectID.ToString()
                 + "\n" + NullException);
         }
 
@@ -105,7 +112,7 @@ public class JSONCaptureGenericObject
             }
             catch (System.NullReferenceException NullException)
             {
-                Debug.Log("ERROR : Please check 3DGameObject paramters in json dict for objectID "+ objectID.ToString()
+                Debug.Log("ERROR : Please check 3DGameObject parameters in json dict for objectID "+ objectID.ToString()
                     + "\n" + NullException);
             }
             
@@ -136,7 +143,7 @@ public class JSONCaptureGenericObject
             }
             catch (System.NullReferenceException NullException)
             {
-                Debug.Log("ERROR : Please check light paramters in json dict for objectID " + objectID.ToString()
+                Debug.Log("ERROR : Please check light parameters in json dict for objectID " + objectID.ToString()
                     + "\n" + NullException);
             }
             
@@ -162,7 +169,7 @@ public class JSONCaptureGenericObject
             }
             catch (System.NullReferenceException NullException)
             {
-                Debug.Log("ERROR : Please check camera paramters in json dict for objectID " + objectID.ToString()
+                Debug.Log("ERROR : Please check camera parameters in json dict for objectID " + objectID.ToString()
                     + "\n" + NullException);
             }
 

@@ -25,7 +25,7 @@ public class UCManageCapture : MonoBehaviour
 
     void Start()
     {
-
+        Screen.SetResolution(256, 256, false);
     }
 
 
