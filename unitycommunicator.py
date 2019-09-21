@@ -39,7 +39,7 @@ class UnityCommunicator:
 
     """
 
-    def __init__(self, unity_build_path, use_with_unity_build):
+    def __init__(self, unity_build_path, use_with_unity_build, loglevel=logging.WARNING):
         """Sets up everything to enable a tcp connection to unity.
 
         Constructor of class, stars logging, stars unity build executable, starts tcp socket.
@@ -52,6 +52,8 @@ class UnityCommunicator:
         use_with_unity_build : bool
             if used with unity engine True, if used with unity build False
             Changes some path specifications and also starts the build if True
+        loglevel : logging.<LEVEL>
+            Specify loglevel of console prompts
 
         """
 
@@ -208,7 +210,6 @@ class UnityCommunicator:
         
         """
         
-        self.logger.debug('_send_data(): entered')
         self.conn_unity.sendall((message + 'eod.').encode())  # End of Data
         self.logger.debug('_send_data(): sendall succeeded')
 
@@ -345,7 +346,7 @@ class UnityCommunicator:
 
 
 if __name__ == '__main__':
-    with UnityCommunicator('/Users/KonstantinN/OneDrive/Dokumente/1_STUDIUM/_2019-SS/INFAP/Unity/TCPGeometrics', use_with_unity_build=False) as uc:
+    with UnityCommunicator('/Users/KonstantinN/OneDrive/Dokumente/1_STUDIUM/_2019-SS/INFAP/Unity/TCPGeometrics', use_with_unity_build=False, loglevel=logging.INFO) as uc:
         json_data = uc.read_json_file('ParameterFiles/parameters_geometrics0.json')
         scene_img, scene_id = uc.render_parameters(json_data)
         Image.fromarray(scene_img).save('SavedScenes/Rendered_Scene_ID-{:3}.png'.format(str(scene_id).zfill(3)))
