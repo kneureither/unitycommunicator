@@ -39,7 +39,7 @@ class UnityCommunicator:
 
     """
 
-    def __init__(self, unity_build_path, use_with_unity_build, loglevel=logging.WARNING):
+    def __init__(self, unity_build_path, use_with_unity_build=True, log_level=logging.WARNING, width=600, height=400):
         """Sets up everything to enable a tcp connection to unity.
 
         Constructor of class, starts logging, starts unity build executable, starts tcp socket.
@@ -51,9 +51,15 @@ class UnityCommunicator:
 
         use_with_unity_build : bool
             if used with unity engine True, if used with unity build False
-            Changes some path specifications and also starts the build if True
-        loglevel : logging.<LEVEL>
-            Specify loglevel of console prompts
+            Changes some path specifications and also starts the build if True.
+            Default: True
+        log_level : logging.<LEVEL>
+            Specified log level which is sent to console during execution.
+            Default: logging.WARNiNG
+        width : int
+            width of rendered picture
+        height : int
+            height of renderd picture
 
         """
 
@@ -64,7 +70,7 @@ class UnityCommunicator:
         self.logger.setLevel(logging.DEBUG)
         # Create console handler
         self.ch = logging.StreamHandler()
-        self.ch.setLevel(logging.INFO)
+        self.ch.setLevel(log_level)
         # Create file handler
         self.fh = logging.FileHandler(self.log_path)
         self.fh.setLevel(logging.DEBUG)
@@ -110,6 +116,11 @@ class UnityCommunicator:
 
         # Call function for tcp server setup
         self.conn_unity = self._setup_server()
+
+        # Send resolution to unity
+        unity_init_dict = {'width':width, 'height':height}
+        unity_init_string = json.dumps(unity_init_dict, separators=(',', ':'))
+        self._send_data(message=unity_init_string)
 
 
     def __enter__(self):
@@ -202,25 +213,24 @@ class UnityCommunicator:
 
 
     def _send_data(self, message):
-        """sends string to socket. 
-        
+        """sends string to socket.
+
         At the end of each message, an end tag 'eod.' is added to the message.
         Unity detects the end of the message by reading this tag.
-        
+
         Parameters
         ---------
         message : str
-            server message to unity. should be in json format.
-        
+            server message to unity. should use json format.
+
         """
-        
         self.conn_unity.sendall((message + 'eod.').encode())  # End of Data
         self.logger.debug('_send_data(): sendall succeeded')
 
 
     def _receive_data_as_bytes(self):
         """receives data at the classes socket.
-        
+
         _receive_data_as_bytes is either ended by timeout or if not data is sent.
 
         Returns
@@ -350,7 +360,7 @@ class UnityCommunicator:
 
 
 if __name__ == '__main__':
-    with UnityCommunicator('/Users/KonstantinN/OneDrive/Dokumente/1_STUDIUM/_2019-SS/INFAP/Unity/TCPGeometrics', use_with_unity_build=False, loglevel=logging.INFO) as uc:
+    with UnityCommunicator('/Users/KonstantinN/OneDrive/Dokumente/1_STUDIUM/_2019-SS/INFAP/Unity/TCPGeometrics', use_with_unity_build=False, log_level=logging.INFO) as uc:
         json_data = uc.read_json_file('ParameterFiles/parameters_geometrics0.json')
         scene_img, scene_id = uc.render_parameters(json_data)
         Image.fromarray(scene_img).save('SavedScenes/Rendered_Scene_ID-{:3}.png'.format(str(scene_id).zfill(3)))

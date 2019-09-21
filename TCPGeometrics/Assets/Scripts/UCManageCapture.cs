@@ -22,6 +22,12 @@ public class UCManageCapture : MonoBehaviour
     }
 
 
+    void Start()
+    {
+        Screen.SetResolution(256, 256, false);
+    }
+
+
     private void Update()
     {
         //UNITY COM : add this to ManageCapture.Update() in custom unity project

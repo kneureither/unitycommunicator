@@ -24,7 +24,7 @@ public class UnityCommunicatorClient
     private TcpConfigParameters Tcpconfig;
     #endregion
 
-    
+
     public UnityCommunicatorClient(int numberOfObjects)
     //Class Constructor
     {
@@ -52,17 +52,49 @@ public class UnityCommunicatorClient
 
         stream = client.GetStream();
         Debug.Log("Connection established!");
+
+        //Reveive and set resolution
+        string serverMessage = this.ListenFromServer();
+        string jsonunityresolution = serverMessage.Substring(0, serverMessage.IndexOf("eod.", StringComparison.Ordinal - 1));
+        UnityInitResolution unityresolution = JsonUtility.FromJson<UnityInitResolution>(jsonunityresolution);
+
+        Screen.SetResolution(unityresolution.width, unityresolution.height, false);
+        Debug.Log("Resolution set to " + unityresolution.width.ToString() + " x " + unityresolution.height.ToString());
     }
 
-    
+
     public void ReceiveParameters()
     //
     {
+        string serverMessage;
+
         //Check if last paramter set has been captured and sent back to server
         if (this.sceneShotProcessed)
         {
             //receive new set of parameters
-            this.ListenFromServer();
+            serverMessage = this.ListenFromServer();
+
+            //Handle quit request from python
+            if (serverMessage == "END.eod.")
+            {
+                endSession = true;
+                Debug.Log("endSession set to true");
+            }
+            else
+            {
+                jsonparameters = serverMessage.Substring(0, serverMessage.IndexOf("eod.", StringComparison.Ordinal - 1));
+                captureChangeRequest = true;
+                sceneShotProcessed = false;
+
+                //Set every object's Render Status to false
+                for (int i = 0; i < numberOfObjects; i++)
+                {
+                    objectParametersSet[i] = false;
+                }
+                //parse received json string to C# class JSONCaptureParameters
+                CaptureParameters = JsonUtility.FromJson<JSONCaptureParameters>(jsonparameters);
+                Debug.Log("STATUS : received parameters of Scene ID : " + CaptureParameters.sceneID + ", JSON Message : " + CaptureParameters.message);
+            }
 
             if (this.endSession == true || Input.GetKey("escape"))
             {
@@ -145,53 +177,29 @@ public class UnityCommunicatorClient
 
 
 
-    private void ListenFromServer()
+    private string ListenFromServer()
     {
         string serverMessage = "";
 
         //Read data from server
-        while (true)
+        Byte[] bytes = new Byte[1024];
+        int bytesRead;
+        while ((bytesRead = stream.Read(bytes, 0, bytes.Length)) != 0)
         {
-            Byte[] bytes = new Byte[1024];
-            int bytesRead;
-            while ((bytesRead = stream.Read(bytes, 0, bytes.Length)) != 0)
+            var incommingData = new byte[bytesRead];
+            Array.Copy(bytes, 0, incommingData, 0, bytesRead);
+            string serverMessageBuffer = Encoding.ASCII.GetString(incommingData);
+            serverMessage += serverMessageBuffer;
+
+            //checks if "end." tag is received. This indicates, that message was received completely
+            //If true, this will break the receiving while-loop
+            if (serverMessage.Substring(serverMessage.Length - 4) == "eod.")
             {
-                var incommingData = new byte[bytesRead];
-                Array.Copy(bytes, 0, incommingData, 0, bytesRead);
-                string serverMessageBuffer = Encoding.ASCII.GetString(incommingData);
-                serverMessage += serverMessageBuffer;
-
-                //checks if "end." tag is received. This indicates, that paramter set was received completely
-                //If true, this will break the receiving while-loop
-                if (serverMessage.Substring(serverMessage.Length - 4) == "eod.")
-                {
-                    Debug.Log("server message received");
-                    //Handle quit request from python
-                    if (serverMessage == "END.eod.")
-                    {
-                        endSession = true;
-                        Debug.Log("endSession set to true");
-                    }
-                    else
-                    {
-                        jsonparameters = serverMessage.Substring(0, serverMessage.IndexOf("eod.", StringComparison.Ordinal - 1));
-                        captureChangeRequest = true;
-                        sceneShotProcessed = false;
-
-                        //Set every object's Render Status to false
-                        for (int i = 0; i < numberOfObjects; i++)
-                        {
-                            objectParametersSet[i] = false;
-                        }
-                        //parse received json string to C# class JSONCaptureParameters
-                        CaptureParameters = JsonUtility.FromJson<JSONCaptureParameters>(jsonparameters);
-                        Debug.Log("STATUS : received parameters of Scene ID : " + CaptureParameters.sceneID+ ", JSON Message : " + CaptureParameters.message);
-                    }
-                    break;
-                }
+                Debug.Log("server message received");
+                break;
             }
-            break;
         }
+        return serverMessage;
     }
 
     private void RespondBytesToServer(byte[] bytesPNG, string metaPNG)
