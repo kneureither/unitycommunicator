@@ -18,13 +18,12 @@ public class UCManageCapture : MonoBehaviour
     {
         //UNITY COM : add this to ManageCapture.Awake() or Start() in custom unity project
         this.UnityCommunicator.InitTCPConnection();
+      
         //////////
     }
-
-
-    void Start()
+    private void Start()
     {
-        Screen.SetResolution(256, 256, false);
+        StartCoroutine(WaitSeconds(3));
     }
 
 
@@ -63,6 +62,11 @@ public class UCManageCapture : MonoBehaviour
 
         //Send PNG back to server
         UnityCommunicator.SendPNGAsBytes(bytesPNG);
+    }
+
+    public IEnumerator WaitSeconds(float seconds)
+    {
+        yield return new WaitForSeconds(seconds);
     }
     ////////
     #endregion

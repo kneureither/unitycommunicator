@@ -19,6 +19,7 @@ public class UnityCommunicatorClient
     private string jsonparameters;
     private bool readyToCapture;
     private bool endSession;
+    private bool skipFrame;
     private TcpClient client;
     private NetworkStream stream;
     private TcpConfigParameters Tcpconfig;
@@ -60,6 +61,13 @@ public class UnityCommunicatorClient
 
         Screen.SetResolution(unityresolution.width, unityresolution.height, false);
         Debug.Log("Resolution set to " + unityresolution.width.ToString() + " x " + unityresolution.height.ToString());
+
+        //Sent confirmation to python
+        this.RespondStringToServer("Resolution set to " + unityresolution.width.ToString() + " x " + unityresolution.height.ToString());
+
+        //Set skipFrame to true, to skip rendering of first big loop
+        this.skipFrame = true;
+
     }
 
 
@@ -161,21 +169,30 @@ public class UnityCommunicatorClient
     //sends screen capture and meta data json file back to python server
     //Metadata can be modified in "UnityComJSONObjectTemplates"
     {
-        Debug.Log("PNG bytes count: " + bytesPNG.Length.ToString());
+        if(this.skipFrame == false)
+        //Wait until frame which is to be skipped is completely rendered and skip the send back to render it again.
+        {
+            Debug.Log("PNG bytes count: " + bytesPNG.Length.ToString());
 
-        //initialize and create metadata for image
-        JSONPNGmetadata jsonPNGmeta = new JSONPNGmetadata(CaptureParameters.sceneID);
-        string stringPNGmeta = JsonUtility.ToJson(jsonPNGmeta);
+            //initialize and create metadata for image
+            JSONPNGmetadata jsonPNGmeta = new JSONPNGmetadata(CaptureParameters.sceneID);
+            string stringPNGmeta = JsonUtility.ToJson(jsonPNGmeta);
 
-        //send img and metadata to pythn server
-        this.RespondBytesToServer(bytesPNG, stringPNGmeta);
-        Debug.Log("Scene ID " + CaptureParameters.sceneID + " successfully sent back to Server");
+            //send img and metadata to pythn server
+            this.RespondBytesToServer(bytesPNG, stringPNGmeta);
+            Debug.Log("Scene ID " + CaptureParameters.sceneID + " successfully sent back to Server");
 
-        //Ready to receive new set of paramters
-        sceneShotProcessed = true;
+            //Ready to receive new set of paramters
+            sceneShotProcessed = true;
+        }
+        else
+        { 
+            Debug.Log("Skipped a frame");
+            this.skipFrame = false;
+            this.captureChangeRequest = true;
+        }
+        
     }
-
-
 
     private string ListenFromServer()
     {
@@ -202,6 +219,34 @@ public class UnityCommunicatorClient
         return serverMessage;
     }
 
+    private void RespondStringToServer(string message)
+    {
+        byte[] clientMessageEndTag = { 255, 0, 250, 251, 252, 253, 254, 255 };
+
+        try
+        {
+            // Get a stream object for writing.
+            if (stream.CanWrite)
+            {
+                byte[] messageBytes = Encoding.ASCII.GetBytes(message);
+                int messageLength = messageBytes.Length;
+
+                // Write message String as byte array to stream
+                stream.Write(messageBytes, 0, messageLength);
+                stream.Write(clientMessageEndTag, 0, clientMessageEndTag.Length);
+                Debug.Log("Client sent his message - should be received by server");
+            }
+            else
+            {
+                Debug.Log("ERROR: Stream not writable");
+            }
+        }
+        catch (SocketException socketException)
+        {
+            Debug.Log("Socket exception: " + socketException);
+        }
+    }
+
     private void RespondBytesToServer(byte[] bytesPNG, string metaPNG)
     {
         byte[] clientMessageEndTag = { 255, 0, 250, 251, 252, 253, 254, 255 };
@@ -223,6 +268,10 @@ public class UnityCommunicatorClient
                 // Write End Tag to stream
                 stream.Write(clientMessageEndTag, 0, clientMessageEndTag.Length);
                 Debug.Log("Client sent his message - should be received by server");
+            }
+            else
+            {
+                Debug.Log("ERROR: Stream not writable");
             }
         }
         catch (SocketException socketException)

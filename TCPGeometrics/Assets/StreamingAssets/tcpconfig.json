@@ -1,5 +1,1 @@
-<<<<<<< HEAD
-{"host": "localhost", "ports": [50000, 50092]}
-=======
-{"host": "localhost", "ports": [50000, 50092]}
->>>>>>> 49c3f31c901c9120ae98bdeb59952e3e747bab8d
+{"host": "localhost", "ports": [50000, 50096]}
