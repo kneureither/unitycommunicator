@@ -226,8 +226,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   objectID: 5
-  manageCapture: {fileID: 137473200}
-  manager: {fileID: 0}
+  UCManageCapture: {fileID: 0}
 --- !u!1 &60153109
 GameObject:
   m_ObjectHideFlags: 0
@@ -303,7 +302,7 @@ GameObject:
   - component: {fileID: 137473202}
   - component: {fileID: 137473201}
   m_Layer: 0
-  m_Name: ManageCapture
+  m_Name: UCManageCapture
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -447,8 +446,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   objectID: 1
-  manageCapture: {fileID: 137473200}
-  manager: {fileID: 0}
+  UCManageCapture: {fileID: 0}
 --- !u!1 &534669902
 GameObject:
   m_ObjectHideFlags: 0
@@ -546,8 +544,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   objectID: 0
-  manageCapture: {fileID: 137473200}
-  manager: {fileID: 0}
+  UCManageCapture: {fileID: 0}
 --- !u!1 &734881835
 GameObject:
   m_ObjectHideFlags: 0
@@ -653,8 +650,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   objectID: 3
-  manageCapture: {fileID: 137473200}
-  manager: {fileID: 0}
+  UCManageCapture: {fileID: 0}
 --- !u!1 &758673971
 GameObject:
   m_ObjectHideFlags: 0
@@ -852,8 +848,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   objectID: 2
-  manageCapture: {fileID: 137473200}
-  manager: {fileID: 0}
+  UCManageCapture: {fileID: 0}
 --- !u!1 &1320247532
 GameObject:
   m_ObjectHideFlags: 0
@@ -901,8 +896,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   objectID: 6
-  manageCapture: {fileID: 137473200}
-  manager: {fileID: 0}
+  UCManageCapture: {fileID: 0}
 --- !u!136 &1320247535
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -1068,5 +1062,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   objectID: 4
-  manageCapture: {fileID: 137473200}
-  manager: {fileID: 0}
+  UCManageCapture: {fileID: 0}

@@ -2,7 +2,7 @@ from unitycommunicator import UnityCommunicator
 from PIL import Image
 
 # Specify location of unity executable build
-unity_build_path = 'TCPGeometricsBuild.app'
+unity_build_path = 'TCPGeometrics/Builds/TCPGeometricsBuild.app''
 
 #initialize UC class
 UC = UnityCommunicator(unity_build_path, use_with_unity_build=True)

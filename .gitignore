@@ -9,12 +9,10 @@ __pycache__
 
 # bash tools
 
-syncunity.txt
-syncfromunity.txt
-
 # hidden files
 
 .*
+*.DS_Store
 
 # <name>/ = Directory
 # *.log = all log files
