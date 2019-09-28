@@ -9,9 +9,8 @@ using System.Text;
 
 public class UCManageCapture : MonoBehaviour
 {
-
-    #region PYTHON COMMUNICATOR: ManageCapture members
-    public static int numberOfObjects = 7;
+    #region UNITY COMMUNICATOR: ManageCapture members
+    public static int numberOfObjects = 7; //This needs to be set for custom project.
     [HideInInspector] public UnityCommunicatorClient UnityCommunicator = new UnityCommunicatorClient(numberOfObjects);
     #endregion
 
@@ -23,12 +22,6 @@ public class UCManageCapture : MonoBehaviour
     }
 
 
-    void Start()
-    {
-
-    }
-
-
     private void Update()
     {
         //UNITY COM : add this to ManageCapture.Update() in custom unity project
@@ -36,7 +29,7 @@ public class UCManageCapture : MonoBehaviour
         ////////
     }
 
-    #region PYTHON COMMUNICATOR : Capture Scene in Late update
+    #region UNITY COMMUNICATOR : Capture Scene in Late update
     void LateUpdate()
     {
         //UNITY COM : add this to ManageCapture.LateUpdate() in custom unity project

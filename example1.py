@@ -2,7 +2,7 @@ from unitycommunicator import UnityCommunicator
 from PIL import Image
 
 # Specify location of unity executable build
-unity_build_path = 'TCPGeometricsBuild.app'
+unity_build_path = 'TCPGeometrics/Builds/TCPGeometricsBuild.app'
 
 with UnityCommunicator(unity_build_path, use_with_unity_build=True) as uc:
     json_data = uc.read_json_file('ParameterFiles/parameters_geometrics0.json')
