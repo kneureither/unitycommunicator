@@ -1,5 +1,5 @@
 # Unity Communicator
-## Developed @ Heidelberg Collaborytory for Image Processing
+## Developed @ Heidelberg Collaboratory for Image Processing
 Author: Konstantin Neureither
 
 
