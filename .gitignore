@@ -17,6 +17,7 @@ synctounity.txt
 **/.*
 .*
 **/.DS_Store
+.DS_Store
 
 
 # <name>/ = Directory
