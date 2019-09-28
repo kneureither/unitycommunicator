@@ -42,7 +42,7 @@ class UnityCommunicator:
     def __init__(self, unity_build_path, use_with_unity_build, loglevel=logging.WARNING):
         """Sets up everything to enable a tcp connection to unity.
 
-        Constructor of class, stars logging, stars unity build executable, starts tcp socket.
+        Constructor of class, starts logging, starts unity build executable, starts tcp socket.
 
         Parameters
         ---------
@@ -124,12 +124,16 @@ class UnityCommunicator:
         return self
 
     def __exit__(self, type, value, traceback):
-        """sends end request to Unity, closes TCP connection. Called when used in with statement"""
+        """Called when used in with statement. Ssends end request to Unity, closes TCP connection. """
+        self.end()
 
+    def end(self):
+        """sends end request to Unity, closes TCP connection."""
         self._send_data('END.')
         self.logger.warning('End command was sent to Unity.')
         self.conn_unity.close()
         self.logger.warning('Socket closed. exit...')
+
 
     def _setup_server(self):
         """Sets up TCP server for unity connection.
