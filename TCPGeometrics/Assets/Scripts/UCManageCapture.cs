@@ -18,6 +18,7 @@ public class UCManageCapture : MonoBehaviour
     {
         //UNITY COM : add this to ManageCapture.Awake() or Start() in custom unity project
         this.UnityCommunicator.InitTCPConnection();
+      
         //////////
     }
 
