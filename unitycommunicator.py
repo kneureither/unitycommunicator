@@ -222,7 +222,11 @@ class UnityCommunicator:
         ---------
         message : str
             server message to unity. should use json format.
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> 49c3f31c901c9120ae98bdeb59952e3e747bab8d
         """
         self.conn_unity.sendall((message + 'eod.').encode())  # End of Data
         self.logger.debug('_send_data(): sendall succeeded')
