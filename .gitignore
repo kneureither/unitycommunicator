@@ -9,27 +9,16 @@ __pycache__
 
 # bash tools
 
-<<<<<<< HEAD
 syncfromunity.txt
 synctounity.txt
-=======
-synctounity.txt
-syncfromunity.txt
->>>>>>> commit before rebase
+
 
 # hidden files
 
 **/.*
 .*
-<<<<<<< HEAD
 **/.DS_Store
 .DS_Store
-
-=======
-.DS_Store
-**/.*
-**/.DS_Store
->>>>>>> commit before rebase
 
 # <name>/ = Directory
 # *.log = all log files

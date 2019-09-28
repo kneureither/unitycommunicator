@@ -19,7 +19,6 @@ public class UnityCommunicatorClient
     private string jsonparameters;
     private bool readyToCapture;
     private bool endSession;
-    private bool skipFrame;
     private TcpClient client;
     private NetworkStream stream;
     private TcpConfigParameters Tcpconfig;
