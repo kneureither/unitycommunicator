@@ -65,9 +65,6 @@ public class UnityCommunicatorClient
         //Sent confirmation to python
         this.RespondStringToServer("Resolution set to " + unityresolution.width.ToString() + " x " + unityresolution.height.ToString());
 
-        //Set skipFrame to true, to skip rendering of first big loop
-        this.skipFrame = true;
-
     }
 
 
@@ -169,29 +166,18 @@ public class UnityCommunicatorClient
     //sends screen capture and meta data json file back to python server
     //Metadata can be modified in "UnityComJSONObjectTemplates"
     {
-        if(this.skipFrame == false)
-        //Wait until frame which is to be skipped is completely rendered and skip the send back to render it again.
-        {
-            Debug.Log("PNG bytes count: " + bytesPNG.Length.ToString());
+        Debug.Log("PNG bytes count: " + bytesPNG.Length.ToString());
 
-            //initialize and create metadata for image
-            JSONPNGmetadata jsonPNGmeta = new JSONPNGmetadata(CaptureParameters.sceneID);
-            string stringPNGmeta = JsonUtility.ToJson(jsonPNGmeta);
+        //initialize and create metadata for image
+        JSONPNGmetadata jsonPNGmeta = new JSONPNGmetadata(CaptureParameters.sceneID);
+        string stringPNGmeta = JsonUtility.ToJson(jsonPNGmeta);
 
-            //send img and metadata to pythn server
-            this.RespondBytesToServer(bytesPNG, stringPNGmeta);
-            Debug.Log("Scene ID " + CaptureParameters.sceneID + " successfully sent back to Server");
+        //send img and metadata to pythn server
+        this.RespondBytesToServer(bytesPNG, stringPNGmeta);
+        Debug.Log("Scene ID " + CaptureParameters.sceneID + " successfully sent back to Server");
 
-            //Ready to receive new set of paramters
-            sceneShotProcessed = true;
-        }
-        else
-        { 
-            Debug.Log("Skipped a frame");
-            this.skipFrame = false;
-            this.captureChangeRequest = true;
-        }
-        
+        //Ready to receive new set of paramters
+        sceneShotProcessed = true;
     }
 
     private string ListenFromServer()
