@@ -21,10 +21,6 @@ public class UCManageCapture : MonoBehaviour
       
         //////////
     }
-    private void Start()
-    {
-        StartCoroutine(WaitSeconds(3));
-    }
 
 
     private void Update()
@@ -62,11 +58,6 @@ public class UCManageCapture : MonoBehaviour
 
         //Send PNG back to server
         UnityCommunicator.SendPNGAsBytes(bytesPNG);
-    }
-
-    public IEnumerator WaitSeconds(float seconds)
-    {
-        yield return new WaitForSeconds(seconds);
     }
     ////////
     #endregion
