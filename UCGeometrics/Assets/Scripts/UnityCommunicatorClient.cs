@@ -10,7 +10,6 @@ public class UnityCommunicatorClient
 {
     #region members
     [HideInInspector] public bool[] objectParametersSet; //tells if every object is set to new json parameters
-    [HideInInspector] public bool captureChangeRequest; //tells if there are new paramteres to render
     [HideInInspector] public bool sceneShotProcessed; //tells if next parameters can be received
     [HideInInspector] public JSONCaptureParameters CaptureParameters; //stores all received parameters for scene (accessed by TCPGameObjectController)
 
@@ -32,7 +31,6 @@ public class UnityCommunicatorClient
         this.numberOfObjects = numberOfObjects;
         readyToCapture = false;
         endSession = false;
-        captureChangeRequest = false;
         sceneShotProcessed = true;
         objectParametersSet = new bool[numberOfObjects];
     }
@@ -87,7 +85,6 @@ public class UnityCommunicatorClient
             else
             {
                 jsonparameters = serverMessage.Substring(0, serverMessage.IndexOf("eod.", StringComparison.Ordinal - 1));
-                captureChangeRequest = true;
                 sceneShotProcessed = false;
 
                 //Set every object's Render Status to false

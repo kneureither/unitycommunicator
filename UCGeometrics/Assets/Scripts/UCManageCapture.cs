@@ -46,7 +46,6 @@ public class UCManageCapture : MonoBehaviour
     public IEnumerator CapturePNGSendAsBytes()
     {
         Debug.Log("Coroutine entered");
-        UnityCommunicator.captureChangeRequest = false;
         //Wait until frame is rendered completely
         yield return new WaitForEndOfFrame();
 
