@@ -4,15 +4,16 @@ import logging
 import numpy as np
 from PIL import Image
 import io
-import os
+import subprocess
 
 
 class UnityCommunicator:
-    """provides all methods for communication to unity game enginge.
+    """
+    Provides all methods for communication to Unity 3D game enginge.
 
-    Scene parameters can be sent to unity, the corresponding scene can be sent back. Therefore a tcp connection is used.
+    Scene parameters can be sent to unity, the corresponding screen shot of the scene will be sent back. Therefore a tcp connection is used.
     The tcp parameters such as 'host' and 'port' are specified in tcpconfig.json file in the unity projects 'StreamingAssets'
-    folder.
+    folder. This class is best used in a with-statement.
 
     See also
     --------
@@ -27,7 +28,7 @@ class UnityCommunicator:
 
     >>> from unitycommunicator import UnityCommunicator
 
-    >>> with UnityCommunicator('unity_build.app', use_with_unity_build=True) as uc:
+    >>> with UnityCommunicator('unity_build.app', use_with_unity_build=True, log_level=logging.WARNING, width=600, height=400) as uc:
     >>>     json_data = uc.read_json_file('parameterfile.json')
     >>>     scene_img, scene_id = uc.render_parameters(json_data)
 
@@ -37,12 +38,26 @@ class UnityCommunicator:
     >>> Image.fromarray(scene_img).save('Rendered_Scene_ID-{:3}.png'.format(str(scene_id).zfill(3)))
     >>> # str.zfill ensures a consistent file naming (leading zeros)
 
+
+    Dependencies
+    ------------
+    Libraries, that are used by this class.
+
+    socket
+    json
+    logging
+    numpy
+    PIL.Image
+    io
+    os
+
     """
 
-    def __init__(self, unity_build_path, use_with_unity_build=True, log_level=logging.WARNING, width=600, height=400):
-        """Sets up everything to enable a tcp connection to unity.
+    def __init__(self, unity_build_path: str, use_with_unity_build=True, log_level=logging.WARNING, width=600, height=400):
+        """
+        Sets up everything to enable a tcp connection to unity.
 
-        Constructor of class, starts logging, starts unity build executable, starts tcp socket.
+        Constructor of class, starts logging, starts unity build executable, starts tcp socket, sends resolution for rendering.
 
         Parameters
         ---------
@@ -54,16 +69,17 @@ class UnityCommunicator:
             Changes some path specifications and also starts the build if True.
             Default: True
         log_level : logging.<LEVEL>
-            Specified log level which is sent to console during execution.
-            Default: logging.WARNiNG
+            log level of the console output.
+            Default: logging.warning.
         width : int
-            width of rendered picture
+            width of rendered picture in px.
         height : int
-            height of renderd picture
+            height of rendered picture in px.
 
         """
 
-        self.log_path = 'log/unity-communicator.log'
+        log_path = 'log/unity-communicator.log'
+
 
         # Create logger
         self.logger = logging.getLogger('UClog')
@@ -72,7 +88,7 @@ class UnityCommunicator:
         self.ch = logging.StreamHandler()
         self.ch.setLevel(log_level)
         # Create file handler
-        self.fh = logging.FileHandler(self.log_path)
+        self.fh = logging.FileHandler(log_path)
         self.fh.setLevel(logging.DEBUG)
         # Add formatter
         self.formatter_fh = logging.Formatter('%(asctime)s - %(levelname)s : %(message)s')
@@ -84,11 +100,11 @@ class UnityCommunicator:
         self.logger.addHandler(self.ch)
 
         #Clear log at startup if it is longer than 1000 lines
-        with open(self.log_path, 'r') as f:
+        with open(log_path, 'r') as f:
             log_length = len(f.readlines())
 
         if log_length > 1000:
-            with open(self.log_path, 'w'):
+            with open(log_path, 'w'):
                 pass
 
         print('')
@@ -100,7 +116,11 @@ class UnityCommunicator:
         if use_with_unity_build == True:
             # For execution with BUILD
             # Start unity build
-            os.system('open ' + self.unity_build_path)
+            try:
+                subprocess.call(["open", self.unity_build_path])
+            except OSError:
+                self.logger.error('Starting Unity build failed. Please start it manually.')
+
             self.streaming_assets_path = self.unity_build_path + '/Contents/Resources/Data/StreamingAssets/'
         else:
             # For execution with unity engine
@@ -108,7 +128,6 @@ class UnityCommunicator:
             self.logger.warning('Please start Unity...')
 
         # Specify paths to tcpconfig.json file (in streamingAssets folder of unity project
-        # self.streaming_assets_path = '/Users/KonstantinN/OneDrive/Dokumente/1_STUDIUM/_2019-SS/INFAP/Unity/TCPGeometrics/Assets/StreamingAssets/'
         self.tcp_config_path = self.streaming_assets_path + 'tcpconfig.json'
 
         # Timeout for socket connection, will be used to prevent lock (in case both peers are receiving)
@@ -116,6 +135,7 @@ class UnityCommunicator:
 
         # Call function for tcp server setup
         self.conn_unity = self._setup_server()
+        self.conn_closed = False
 
         # Send resolution to unity
         unity_init_dict = {'width':width, 'height':height}
@@ -129,7 +149,8 @@ class UnityCommunicator:
 
 
     def __enter__(self):
-        """Necessary for usage in with...as statement.
+        """
+        Necessary for usage in with...as statement.
 
         Returns
         -------
@@ -140,19 +161,29 @@ class UnityCommunicator:
         return self
 
     def __exit__(self, type, value, traceback):
-        """Called when used in with statement. Ssends end request to Unity, closes TCP connection. """
-        self.end()
+        """Called when used in with statement. Sends end request to Unity, closes TCP connection. """
+        self.close()
+        self.conn_closed = True
 
-    def end(self):
+    def __del__(self):
+        """Class destructor. Sends end request to Unity, closes TCP connection. """
+        if not self.conn_closed:
+            self.close()
+            self.conn_closed = True
+
+    def close(self):
         """sends end request to Unity, closes TCP connection."""
-        self._send_data('END.')
-        self.logger.warning('End command was sent to Unity.')
-        self.conn_unity.close()
-        self.logger.warning('Socket closed. exit...')
+        if not self.conn_closed:
+            self._send_data('END.')
+            self.logger.warning('End command was sent to Unity.')
+            self.conn_unity.close()
+            self.logger.warning('Socket closed. Shutting down...')
+            self.conn_closed = True
 
 
     def _setup_server(self):
-        """Sets up TCP server for unity connection.
+        """
+        Sets up TCP server for unity connection.
 
         Therefore it looks for a free port in range (50000, 50099) and stores
         the used port in tcpconfig.json file of Unity project at /StreamingAssets/tcpconfig.json.
@@ -178,6 +209,7 @@ class UnityCommunicator:
                 f.close()
         except FileNotFoundError as e:
             self.logger.error('\'tcpconfig.json\' no such file, should be found in <UnityProject>/Assets/StreamingAssets/')
+            self.conn_closed = True # To prevent __del__() from closing a not existing connection
             raise e
 
 
@@ -217,8 +249,9 @@ class UnityCommunicator:
         return conn_unity
 
 
-    def _send_data(self, message):
-        """sends string to socket.
+    def _send_data(self, message: str):
+        """
+        Sends string to socket.
 
         At the end of each message, an end tag 'eod.' is added to the message.
         Unity detects the end of the message by reading this tag.
@@ -233,7 +266,8 @@ class UnityCommunicator:
 
 
     def _receive_data_as_bytes(self):
-        """receives data at the classes socket.
+        """
+        Receives data at the classes socket.
 
         _receive_data_as_bytes is either ended by timeout or if not data is sent.
 
@@ -250,7 +284,7 @@ class UnityCommunicator:
             try:
                 data = self.conn_unity.recv(1024)
             except socket.timeout:
-                self.logger.debug('_receive_data_as_bytes(): timeout -> exit _receiveData()')
+                self.logger.debug('_receive_data_as_bytes(): timeout -> exit _receive_data_as_bytes()')
                 break
 
             data_complete = data_complete + data
@@ -261,7 +295,8 @@ class UnityCommunicator:
         return data_complete
 
     def _receive_complete_message(self):
-        """Receives data until the valid end tag of the message is detected, then return message as bytes
+        """
+        Receives data until the valid end tag of the message is detected, then return message as bytes.
 
         Returns
         -------
@@ -284,8 +319,9 @@ class UnityCommunicator:
         return unity_resp_bytes[:-8]
 
 
-    def read_json_file(self, file_name):
-        """loads json file as python directory.
+    def read_json_file(self, file_name: str):
+        """
+        Loads json file as python directory.
 
         Parameters
         ---------
@@ -314,8 +350,9 @@ class UnityCommunicator:
 
         return json_dict
 
-    def render_parameters(self, param_dict):
-        """controls the rendering of one scene parameter set in unity.
+    def render_parameters(self, param_dict: dict):
+        """
+        Controls the rendering of one scene parameter set in unity.
 
         Therefore it delivers given parameters as json string to unity and returns the scene meta data as well as a
         rendered scene picture. The json_dict should contain parameters for every scene object in unity. Also the class
@@ -324,7 +361,7 @@ class UnityCommunicator:
         Parameters
         ---------
         param_dict : dictionary
-            should contain all parameters of scene objects in unity.
+            should contain all parameters of scene objects in unity. Also the unchanged ones compared to the last frame.
 
         Returns
         -------
@@ -335,7 +372,7 @@ class UnityCommunicator:
 
         See also
         --------
-        Documentation unitycommunicator.
+        Documentation unity communicator.
 
         Examples
         --------
@@ -343,11 +380,11 @@ class UnityCommunicator:
 
         """
 
-        self.logger.info('Render parameters of scene with ID ' + str(param_dict['sceneID']) + ' ...')
-
         if param_dict is None:
             self.logger.error('render_parameters(): Aborted because of invalid json_dict')
             return None
+
+        self.logger.info('Render parameters of scene with ID ' + str(param_dict['sceneID']) + ' ...')
 
         json_string = json.dumps(param_dict, separators=(',', ':'))
 
@@ -373,19 +410,19 @@ class UnityCommunicator:
         pillow_img = Image.open(io.BytesIO(img_bytes))
         scene_img = np.array(pillow_img)
 
-        return scene_img, scene_id
+        return scene_img, meta_data_dict
 
 
 if __name__ == '__main__':
-    with UnityCommunicator('/Users/KonstantinN/OneDrive/Dokumente/1_STUDIUM/_2019-SS/INFAP/Unity/TCPGeometrics', use_with_unity_build=False, log_level=logging.INFO, width=550, height=400) as uc:
+    with UnityCommunicator('UCGeometrics', use_with_unity_build=False, log_level=logging.INFO, width=550, height=400) as uc:
         json_data = uc.read_json_file('ParameterFiles/parameters_geometrics0.json')
-        scene_img, scene_id = uc.render_parameters(json_data)
-        Image.fromarray(scene_img).save('SavedScenes/Rendered_Scene_ID-{:3}.png'.format(str(scene_id).zfill(3)))
+        scene_img, meta_data_dict = uc.render_parameters(json_data)
+        Image.fromarray(scene_img).save('SavedScenes/Rendered_Scene_ID-{:3}.png'.format(str(meta_data_dict['sceneID']).zfill(3)))
 
         json_data = uc.read_json_file('ParameterFiles/parameters_geometrics1.json')
-        scene_img, scene_id = uc.render_parameters(json_data)
-        Image.fromarray(scene_img).save('SavedScenes/Rendered_Scene_ID-{:3}.png'.format(str(scene_id).zfill(3)))
+        scene_img, meta_data_dict = uc.render_parameters(json_data)
+        Image.fromarray(scene_img).save('SavedScenes/Rendered_Scene_ID-{:3}.png'.format(str(meta_data_dict['sceneID']).zfill(3)))
 
         json_data = uc.read_json_file('ParameterFiles/parameters_geometrics2.json')
-        scene_img, scene_id = uc.render_parameters(json_data)
-        Image.fromarray(scene_img).save('SavedScenes/Rendered_Scene_ID-{:3}.png'.format(str(scene_id).zfill(3)))
+        scene_img, meta_data_dict = uc.render_parameters(json_data)
+        Image.fromarray(scene_img).save('SavedScenes/Rendered_Scene_ID-{:3}.png'.format(str(meta_data_dict['sceneID']).zfill(3)))

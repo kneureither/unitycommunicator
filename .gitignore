@@ -2,6 +2,7 @@
 
 LOG/**
 DEBUGGING/**
+SavedScenes/**
 
 # PyCharm
 .idea
@@ -11,6 +12,7 @@ __pycache__
 
 syncfromunity.txt
 synctounity.txt
+.gitignore
 
 
 # hidden files
