@@ -1,6 +1,6 @@
 # Unity Communicator
 ## Developed @ Heidelberg Collaboratory for Image Processing
-Author: Konstantin Neureither, September 2019
+Author: Konstantin Neureither, September 2019 under the supervision of Prof. Dr. Björn Ommer
 
 This project delivers an easy to use Python - Unity interface for scene Rendering. 
 
